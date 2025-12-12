@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faytime - Time, Weather & Markets Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .city-selector {
+            margin-bottom: 20px;
+        }
+
+        .city-selector label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .city-selector input {
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-right: 10px;
+            width: 250px;
+        }
+
+        .city-selector button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .city-selector button:hover {
+            background: #764ba2;
+        }
+
+        .city-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .info-box h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .info-box .value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .info-box .detail {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .markets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .market-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .market-card.open {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .market-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .market-status {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .moon-display {
+            text-align: center;
+            font-size: 4em;
+            margin: 10px 0;
+        }
+
+        .error {
+            background: #f44336;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .city-selector input {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .city-selector button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Faytime - Global Time & Markets Tracker</h1>
+
+        <div class="card">
+            <div class="city-selector">
+                <label for="cityInput">Enter City:</label>
+                <input type="text" id="cityInput" placeholder="e.g., New York, London, Tokyo" value="New York">
+                <button onclick="updateCity()">Track City</button>
+            </div>
+            <div class="error" id="errorMsg"></div>
+            <div class="loading" id="loading">Loading...</div>
+            <div class="city-info" id="cityInfo"></div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 20px;">📊 Major Global Markets</h2>
+            <div class="markets-grid" id="marketsGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Market data with trading hours (in UTC)
+        const markets = [
+            {
+                name: "NYSE (New York Stock Exchange)",
+                symbol: "NYSE",
+                timezone: "America/New_York",
+                openHour: 14, openMinute: 30, // 9:30 AM EST in UTC
+                closeHour: 21, closeMinute: 0,  // 4:00 PM EST in UTC
+                daysOpen: [1, 2, 3, 4, 5] // Monday to Friday
+            },
+            {
+                name: "NASDAQ",
+                symbol: "NASDAQ",
+                timezone: "America/New_York",
+                openHour: 14, openMinute: 30,
+                closeHour: 21, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "London Stock Exchange",
+                symbol: "LSE",
+                timezone: "Europe/London",
+                openHour: 8, openMinute: 0,
+                closeHour: 16, closeMinute: 30,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "Tokyo Stock Exchange",
+                symbol: "TSE",
+                timezone: "Asia/Tokyo",
+                openHour: 0, openMinute: 0, // 9:00 AM JST in UTC
+                closeHour: 6, closeMinute: 0,  // 3:00 PM JST in UTC
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "Hong Kong Stock Exchange",
+                symbol: "HKEX",
+                timezone: "Asia/Hong_Kong",
+                openHour: 1, openMinute: 30,
+                closeHour: 8, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "Shanghai Stock Exchange",
+                symbol: "SSE",
+                timezone: "Asia/Shanghai",
+                openHour: 1, openMinute: 30,
+                closeHour: 7, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5]
+            }
+        ];
+
+        let currentCity = "New York";
+        let cityLat = 40.7128;
+        let cityLon = -74.0060;
+
+        // Calculate moon phase
+        function getMoonPhase(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            let c = 0, e = 0, jd = 0, b = 0;
+
+            if (month < 3) {
+                year--;
+                month += 12;
+            }
+
+            ++month;
+            c = 365.25 * year;
+            e = 30.6 * month;
+            jd = c + e + day - 694039.09;
+            jd /= 29.5305882;
+            b = parseInt(jd);
+            jd -= b;
+            b = Math.round(jd * 8);
+
+            if (b >= 8) b = 0;
+
+            const phases = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
+            const phaseNames = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 
+                               'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'];
+
+            return {
+                emoji: phases[b],
+                name: phaseNames[b],
+                illumination: Math.round(jd * 100)
+            };
+        }
+
+        // Get time until market opens/closes
+        function getMarketStatus(market) {
+            const now = new Date();
+            const utcHours = now.getUTCHours();
+            const utcMinutes = now.getUTCMinutes();
+            const utcDay = now.getUTCDay();
+
+            // Check if it's a trading day
+            if (!market.daysOpen.includes(utcDay)) {
+                const daysUntilOpen = market.daysOpen.map(d => {
+                    let diff = d - utcDay;
+                    if (diff <= 0) diff += 7;
+                    return diff;
+                }).sort()[0];
+                return {
+                    isOpen: false,
+                    message: `Closed - Opens in ${daysUntilOpen} day${daysUntilOpen > 1 ? 's' : ''}`,
+                    minutesUntil: daysUntilOpen * 24 * 60
+                };
+            }
+
+            const currentMinutes = utcHours * 60 + utcMinutes;
+            const openMinutes = market.openHour * 60 + market.openMinute;
+            const closeMinutes = market.closeHour * 60 + market.closeMinute;
+
+            if (currentMinutes >= openMinutes && currentMinutes < closeMinutes) {
+                const minutesUntilClose = closeMinutes - currentMinutes;
+                const hours = Math.floor(minutesUntilClose / 60);
+                const minutes = minutesUntilClose % 60;
+                return {
+                    isOpen: true,
+                    message: `OPEN - Closes in ${hours}h ${minutes}m`,
+                    minutesUntil: minutesUntilClose
+                };
+            } else if (currentMinutes < openMinutes) {
+                const minutesUntilOpen = openMinutes - currentMinutes;
+                const hours = Math.floor(minutesUntilOpen / 60);
+                const minutes = minutesUntilOpen % 60;
+                return {
+                    isOpen: false,
+                    message: `Closed - Opens in ${hours}h ${minutes}m`,
+                    minutesUntil: minutesUntilOpen
+                };
+            } else {
+                // After close, calculate until next day's open
+                const minutesUntilOpen = (24 * 60 - currentMinutes) + openMinutes;
+                const hours = Math.floor(minutesUntilOpen / 60);
+                const minutes = minutesUntilOpen % 60;
+                return {
+                    isOpen: false,
+                    message: `Closed - Opens in ${hours}h ${minutes}m`,
+                    minutesUntil: minutesUntilOpen
+                };
+            }
+        }
+
+        // Update markets display
+        function updateMarkets() {
+            const grid = document.getElementById('marketsGrid');
+            grid.innerHTML = markets.map(market => {
+                const status = getMarketStatus(market);
+                const localTime = new Date().toLocaleTimeString('en-US', { 
+                    timeZone: market.timezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                
+                return `
+                    <div class="market-card ${status.isOpen ? 'open' : ''}">
+                        <h3>${market.name}</h3>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 5px;">
+                            Local Time: ${localTime}
+                        </div>
+                        <div class="market-status">
+                            ${status.isOpen ? '✅' : '🔴'} ${status.message}
+                        </div>
+                        <div style="font-size: 0.85em; opacity: 0.9;">
+                            Trading Hours: ${formatMarketHours(market)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function formatMarketHours(market) {
+            const open = new Date();
+            open.setUTCHours(market.openHour, market.openMinute, 0);
+            const close = new Date();
+            close.setUTCHours(market.closeHour, market.closeMinute, 0);
+            
+            const openTime = open.toLocaleTimeString('en-US', { 
+                timeZone: market.timezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            const closeTime = close.toLocaleTimeString('en-US', { 
+                timeZone: market.timezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            return `${openTime} - ${closeTime}`;
+        }
+
+        // Geocode city name to coordinates
+        async function geocodeCity(cityName) {
+            const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.results && data.results.length > 0) {
+                    return {
+                        lat: data.results[0].latitude,
+                        lon: data.results[0].longitude,
+                        name: data.results[0].name,
+                        country: data.results[0].country
+                    };
+                }
+                throw new Error('City not found');
+            } catch (error) {
+                throw new Error('Failed to find city location');
+            }
+        }
+
+        // Get weather data using Open-Meteo API (free, no API key required)
+        async function getWeatherData(lat, lon) {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&timezone=auto`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                throw new Error('Failed to fetch weather data');
+            }
+        }
+
+        // Update city display
+        async function updateCity() {
+            const cityInput = document.getElementById('cityInput');
+            const cityName = cityInput.value.trim();
+            
+            if (!cityName) {
+                showError('Please enter a city name');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const errorMsg = document.getElementById('errorMsg');
+            const cityInfo = document.getElementById('cityInfo');
+
+            loading.style.display = 'block';
+            errorMsg.style.display = 'none';
+            cityInfo.innerHTML = '';
+
+            try {
+                // Geocode the city
+                const location = await geocodeCity(cityName);
+                cityLat = location.lat;
+                cityLon = location.lon;
+                currentCity = `${location.name}, ${location.country}`;
+
+                // Get weather data
+                const weather = await getWeatherData(cityLat, cityLon);
+
+                // Get moon phase
+                const moonPhase = getMoonPhase(new Date());
+
+                // Display all information
+                displayCityInfo(location, weather, moonPhase);
+                
+                loading.style.display = 'none';
+            } catch (error) {
+                loading.style.display = 'none';
+                showError(error.message);
+            }
+        }
+
+        function displayCityInfo(location, weather, moonPhase) {
+            const cityInfo = document.getElementById('cityInfo');
+            const now = new Date();
+            
+            // Get local time for the city using timezone from API
+            const localTime = now.toLocaleString('en-US', {
+                timeZone: weather.timezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+
+            const localDate = now.toLocaleDateString('en-US', {
+                timeZone: weather.timezone,
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const cloudCover = weather.current.cloud_cover;
+            const temperature = Math.round(weather.current.temperature_2m);
+            const humidity = weather.current.relative_humidity_2m;
+            const windSpeed = weather.current.wind_speed_10m;
+
+            cityInfo.innerHTML = `
+                <div class="info-box">
+                    <h3>🕐 Local Time</h3>
+                    <div class="value" id="localTime">${localTime}</div>
+                    <div class="detail">${localDate}</div>
+                    <div class="detail">${currentCity}</div>
+                </div>
+                <div class="info-box">
+                    <h3>☁️ Cloud Cover</h3>
+                    <div class="value">${cloudCover}%</div>
+                    <div class="detail">Temperature: ${temperature}°C</div>
+                    <div class="detail">Humidity: ${humidity}%</div>
+                    <div class="detail">Wind: ${windSpeed} km/h</div>
+                </div>
+                <div class="info-box">
+                    <h3>🌙 Moon Phase</h3>
+                    <div class="moon-display">${moonPhase.emoji}</div>
+                    <div class="detail">${moonPhase.name}</div>
+                    <div class="detail">Illumination: ${moonPhase.illumination}%</div>
+                </div>
+            `;
+
+            // Update time every second
+            updateLocalTime(weather.timezone);
+        }
+
+        function updateLocalTime(timezone) {
+            setInterval(() => {
+                const timeElement = document.getElementById('localTime');
+                if (timeElement) {
+                    const now = new Date();
+                    const localTime = now.toLocaleString('en-US', {
+                        timeZone: timezone,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    });
+                    timeElement.textContent = localTime;
+                }
+            }, 1000);
+        }
+
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateCity();
+            updateMarkets();
+            
+            // Update markets every minute
+            setInterval(updateMarkets, 60000);
+
+            // Allow Enter key to update city
+            document.getElementById('cityInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    updateCity();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
