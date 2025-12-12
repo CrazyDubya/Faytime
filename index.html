@@ -3,244 +3,1471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faytime - Time, Weather & Markets Tracker</title>
+    <meta name="description" content="Faytime - Track local time, weather, and global stock market status for any city worldwide. Real-time updates for NYSE, NASDAQ, LSE, TSE, and 12+ major exchanges.">
+    <meta name="keywords" content="world clock, global markets, stock exchange hours, time zones, weather tracker, NYSE, NASDAQ, LSE, market status">
+    <meta name="author" content="Faytime">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#667eea">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:title" content="Faytime - Global Time & Markets Tracker">
+    <meta property="og:description" content="Track local time, weather, and stock market status for any city worldwide.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Faytime - Global Time & Markets Tracker">
+    <meta name="twitter:description" content="Track local time, weather, and stock market status for any city worldwide.">
+
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://crazydubya.github.io/Faytime/">
+
+    <title>Faytime - Global Time, Weather & Markets Tracker</title>
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Faytime",
+        "description": "Track local time, weather, and global stock market status for any city worldwide",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            --card-hover-shadow: 0 15px 50px rgba(0,0,0,0.25);
+            --border-radius: 16px;
+            --transition-speed: 0.3s;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--primary-gradient);
+            background-attachment: fixed;
             min-height: 100vh;
             padding: 20px;
             color: #333;
+            line-height: 1.6;
+        }
+
+        /* Skip to main content for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #000;
+            color: #fff;
+            padding: 8px 16px;
+            z-index: 100;
+            transition: top var(--transition-speed);
+        }
+
+        .skip-link:focus {
+            top: 0;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
-        h1 {
+        header {
             text-align: center;
-            color: white;
             margin-bottom: 30px;
-            font-size: 2.5em;
+        }
+
+        h1 {
+            color: white;
+            font-size: clamp(1.8em, 5vw, 2.8em);
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1em;
+            margin-top: 8px;
         }
 
         .card {
             background: white;
-            border-radius: 15px;
+            border-radius: var(--border-radius);
             padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            transition: box-shadow var(--transition-speed), transform var(--transition-speed);
         }
 
+        .card:hover {
+            box-shadow: var(--card-hover-shadow);
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* City Selector Styles */
         .city-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
             margin-bottom: 20px;
         }
 
         .city-selector label {
-            font-weight: bold;
-            margin-right: 10px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .input-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
         }
 
         .city-selector input {
-            padding: 10px;
-            border: 2px solid #667eea;
-            border-radius: 5px;
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
             font-size: 16px;
-            margin-right: 10px;
-            width: 250px;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+            outline: none;
+        }
+
+        .city-selector input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .city-selector input::placeholder {
+            color: #999;
         }
 
         .city-selector button {
-            padding: 10px 20px;
-            background: #667eea;
+            padding: 14px 28px;
+            background: var(--primary-gradient);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
             cursor: pointer;
             font-size: 16px;
-            transition: background 0.3s;
+            font-weight: 600;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            white-space: nowrap;
         }
 
         .city-selector button:hover {
-            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
 
+        .city-selector button:active {
+            transform: translateY(0);
+        }
+
+        .city-selector button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Suggestions */
+        .suggestions {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .suggestions.visible {
+            display: block;
+        }
+
+        .suggestions-title {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .suggestion-chip {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all var(--transition-speed);
+        }
+
+        .suggestion-chip:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Autocomplete Dropdown */
+        .autocomplete-container {
+            position: relative;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #667eea;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .autocomplete-dropdown.visible {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 12px 18px;
+            cursor: pointer;
+            transition: background var(--transition-speed);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .autocomplete-item:hover, .autocomplete-item.selected {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+        }
+
+        .autocomplete-item .city-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .autocomplete-item .city-country {
+            font-size: 0.85em;
+            color: #777;
+            margin-left: 8px;
+        }
+
+        .autocomplete-item .city-local {
+            font-size: 0.8em;
+            color: #999;
+            font-style: italic;
+        }
+
+        .autocomplete-item .match-type {
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 8px;
+            background: #667eea20;
+            color: #667eea;
+        }
+
+        /* City Info Grid */
         .city-info {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
 
         .info-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            border-radius: 10px;
+            background: var(--primary-gradient);
+            padding: 24px;
+            border-radius: 14px;
             color: white;
             text-align: center;
+            transition: transform var(--transition-speed);
+        }
+
+        .info-box:hover {
+            transform: translateY(-4px);
         }
 
         .info-box h3 {
-            margin-bottom: 10px;
-            font-size: 1.2em;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            opacity: 0.95;
         }
 
         .info-box .value {
-            font-size: 2em;
-            font-weight: bold;
-            margin: 10px 0;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin: 12px 0;
+            letter-spacing: -1px;
         }
 
         .info-box .detail {
             font-size: 0.9em;
             opacity: 0.9;
+            margin-top: 6px;
+        }
+
+        /* Markets Section */
+        .markets-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .market-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 500;
+            transition: all var(--transition-speed);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #667eea;
+            color: white;
         }
 
         .markets-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
         }
 
         .market-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 15px;
-            border-radius: 10px;
+            background: var(--secondary-gradient);
+            padding: 20px;
+            border-radius: 14px;
             color: white;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .market-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .market-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .market-card.open {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: var(--success-gradient);
+        }
+
+        .market-card.holiday {
+            background: var(--warning-gradient);
         }
 
         .market-card h3 {
-            margin-bottom: 10px;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .market-region {
+            font-size: 0.75em;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .market-time {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 8px;
         }
 
         .market-status {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin: 10px 0;
+            font-weight: 700;
+            font-size: 1.15em;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
+        .market-hours {
+            font-size: 0.85em;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .market-note {
+            font-size: 0.8em;
+            opacity: 0.85;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* Moon Display */
         .moon-display {
-            text-align: center;
             font-size: 4em;
             margin: 10px 0;
+            animation: moonGlow 3s ease-in-out infinite;
         }
 
+        @keyframes moonGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+            50% { text-shadow: 0 0 40px rgba(255,255,255,0.6); }
+        }
+
+        /* Status Messages */
         .error {
-            background: #f44336;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
             color: white;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin: 12px 0;
             display: none;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
         }
 
         .loading {
             text-align: center;
-            padding: 20px;
-            color: #667eea;
+            padding: 30px;
             display: none;
         }
 
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9em;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
+            body {
+                padding: 12px;
             }
 
-            .city-selector input {
+            .card {
+                padding: 18px;
+            }
+
+            .city-selector {
+                flex-direction: column;
+            }
+
+            .input-wrapper {
                 width: 100%;
-                margin-bottom: 10px;
             }
 
             .city-selector button {
                 width: 100%;
             }
+
+            .markets-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-box .value {
+                font-size: 1.8em;
+            }
+
+            .moon-display {
+                font-size: 3em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.6em;
+            }
+
+            .market-card {
+                padding: 16px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <div class="container">
-        <h1>🌍 Faytime - Global Time & Markets Tracker</h1>
+        <header>
+            <h1>Faytime</h1>
+            <p class="subtitle">Global Time, Weather & Markets Tracker</p>
+        </header>
 
-        <div class="card">
-            <div class="city-selector">
-                <label for="cityInput">Enter City:</label>
-                <input type="text" id="cityInput" placeholder="e.g., New York, London, Tokyo" value="New York">
-                <button onclick="updateCity()">Track City</button>
-            </div>
-            <div class="error" id="errorMsg"></div>
-            <div class="loading" id="loading">Loading...</div>
-            <div class="city-info" id="cityInfo"></div>
-        </div>
+        <main id="main-content">
+            <section class="card" aria-label="City Tracker">
+                <div class="city-selector">
+                    <label for="cityInput" id="cityLabel">Enter City or Country:</label>
+                    <div class="input-wrapper autocomplete-container">
+                        <input
+                            type="text"
+                            id="cityInput"
+                            placeholder="e.g., New York, Tokyo, Paris, Brasil, Deutschland..."
+                            value="New York"
+                            aria-labelledby="cityLabel"
+                            aria-autocomplete="list"
+                            aria-controls="autocomplete-list"
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                        <div id="autocomplete-list" class="autocomplete-dropdown" role="listbox" aria-label="City suggestions"></div>
+                    </div>
+                    <button onclick="updateCity()" id="trackBtn" aria-label="Track selected city">
+                        Track Location
+                    </button>
+                </div>
 
-        <div class="card">
-            <h2 style="margin-bottom: 20px;">📊 Major Global Markets</h2>
-            <div class="markets-grid" id="marketsGrid"></div>
-        </div>
+                <div id="suggestions" class="suggestions" role="region" aria-label="City suggestions"></div>
+
+                <div class="error" id="errorMsg" role="alert" aria-live="polite"></div>
+
+                <div class="loading" id="loading" aria-live="polite">
+                    <div class="loading-spinner" aria-hidden="true"></div>
+                    <div class="loading-text">Finding location...</div>
+                </div>
+
+                <div class="city-info" id="cityInfo" aria-live="polite"></div>
+            </section>
+
+            <section class="card" aria-label="Global Markets">
+                <div class="markets-header">
+                    <h2 class="card-title">Global Stock Markets</h2>
+                    <div class="market-filters" role="group" aria-label="Filter markets by region">
+                        <button class="filter-btn active" data-region="all" onclick="filterMarkets('all')">All</button>
+                        <button class="filter-btn" data-region="americas" onclick="filterMarkets('americas')">Americas</button>
+                        <button class="filter-btn" data-region="europe" onclick="filterMarkets('europe')">Europe</button>
+                        <button class="filter-btn" data-region="asia" onclick="filterMarkets('asia')">Asia-Pacific</button>
+                    </div>
+                </div>
+                <div class="markets-grid" id="marketsGrid" role="list"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Data updates every minute. Market hours may vary on special occasions.</p>
+            <p>Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo API</a></p>
+        </footer>
     </div>
 
     <script>
-        // Market data with trading hours (in UTC)
-        // Note: Hours are approximate and don't account for DST transitions
-        // For production use, consider using a timezone library like moment-timezone
+        'use strict';
+
+        // Popular cities with multiple language names for autocomplete
+        const popularCities = [
+            // Major World Cities with local names
+            { name: 'New York', country: 'United States', local: ['Nueva York', 'Нью-Йорк', 'ニューヨーク', '纽约'], timezone: 'America/New_York' },
+            { name: 'Los Angeles', country: 'United States', local: ['LA', 'L.A.'], timezone: 'America/Los_Angeles' },
+            { name: 'Chicago', country: 'United States', local: ['Chi-Town'], timezone: 'America/Chicago' },
+            { name: 'London', country: 'United Kingdom', local: ['Londres', 'Londra', 'ロンドン', '伦敦', 'Лондон'], timezone: 'Europe/London' },
+            { name: 'Paris', country: 'France', local: ['Parigi', 'パリ', '巴黎', 'Париж'], timezone: 'Europe/Paris' },
+            { name: 'Tokyo', country: 'Japan', local: ['東京', 'Токио', 'Tóquio', 'Tokio'], timezone: 'Asia/Tokyo' },
+            { name: 'Beijing', country: 'China', local: ['北京', 'Pékin', 'Peking', 'Пекин'], timezone: 'Asia/Shanghai' },
+            { name: 'Shanghai', country: 'China', local: ['上海', 'Xangai', 'Шанхай'], timezone: 'Asia/Shanghai' },
+            { name: 'Hong Kong', country: 'China', local: ['香港', 'HK'], timezone: 'Asia/Hong_Kong' },
+            { name: 'Singapore', country: 'Singapore', local: ['新加坡', 'Singapura', 'Singapur', 'Сингапур'], timezone: 'Asia/Singapore' },
+            { name: 'Sydney', country: 'Australia', local: ['Sídney', 'Сидней', 'シドニー'], timezone: 'Australia/Sydney' },
+            { name: 'Melbourne', country: 'Australia', local: [], timezone: 'Australia/Melbourne' },
+            { name: 'Dubai', country: 'UAE', local: ['دبي', 'Dubái', 'Дубай'], timezone: 'Asia/Dubai' },
+            { name: 'Mumbai', country: 'India', local: ['मुंबई', 'Bombay', 'Bombaim', 'ムンバイ'], timezone: 'Asia/Kolkata' },
+            { name: 'Delhi', country: 'India', local: ['New Delhi', 'दिल्ली', 'Nueva Delhi'], timezone: 'Asia/Kolkata' },
+            { name: 'Seoul', country: 'South Korea', local: ['서울', 'Seúl', 'Сеул', 'ソウル'], timezone: 'Asia/Seoul' },
+            { name: 'Bangkok', country: 'Thailand', local: ['กรุงเทพ', 'Banguecoque', 'Бангкок'], timezone: 'Asia/Bangkok' },
+            { name: 'Moscow', country: 'Russia', local: ['Москва', 'Moscou', 'Moscú', 'Mosca', 'モスクワ'], timezone: 'Europe/Moscow' },
+            { name: 'Berlin', country: 'Germany', local: ['Berlín', 'Берлін', 'ベルリン', '柏林'], timezone: 'Europe/Berlin' },
+            { name: 'Frankfurt', country: 'Germany', local: ['Francfort', 'Francoforte'], timezone: 'Europe/Berlin' },
+            { name: 'Munich', country: 'Germany', local: ['München', 'Múnich', 'Monaco di Baviera'], timezone: 'Europe/Berlin' },
+            { name: 'Rome', country: 'Italy', local: ['Roma', 'Рим', 'ローマ', '罗马'], timezone: 'Europe/Rome' },
+            { name: 'Milan', country: 'Italy', local: ['Milano', 'Milán', 'ミラノ'], timezone: 'Europe/Rome' },
+            { name: 'Madrid', country: 'Spain', local: ['Мадрид', 'マドリード', '马德里'], timezone: 'Europe/Madrid' },
+            { name: 'Barcelona', country: 'Spain', local: ['Barcelone', 'バルセロナ'], timezone: 'Europe/Madrid' },
+            { name: 'Amsterdam', country: 'Netherlands', local: ['Ámsterdam', 'Amsterdão', 'アムステルダム'], timezone: 'Europe/Amsterdam' },
+            { name: 'Zurich', country: 'Switzerland', local: ['Zürich', 'Zurigo', 'チューリッヒ'], timezone: 'Europe/Zurich' },
+            { name: 'Geneva', country: 'Switzerland', local: ['Genève', 'Genf', 'Ginevra', 'ジュネーブ'], timezone: 'Europe/Zurich' },
+            { name: 'Toronto', country: 'Canada', local: ['トロント'], timezone: 'America/Toronto' },
+            { name: 'Vancouver', country: 'Canada', local: ['バンクーバー'], timezone: 'America/Vancouver' },
+            { name: 'Sao Paulo', country: 'Brazil', local: ['São Paulo', 'San Pablo', 'サンパウロ'], timezone: 'America/Sao_Paulo' },
+            { name: 'Rio de Janeiro', country: 'Brazil', local: ['Rio', 'Río de Janeiro', 'リオデジャネイロ'], timezone: 'America/Sao_Paulo' },
+            { name: 'Mexico City', country: 'Mexico', local: ['Ciudad de México', 'CDMX', 'メキシコシティ'], timezone: 'America/Mexico_City' },
+            { name: 'Buenos Aires', country: 'Argentina', local: ['ブエノスアイレス'], timezone: 'America/Argentina/Buenos_Aires' },
+            { name: 'Cairo', country: 'Egypt', local: ['القاهرة', 'El Cairo', 'カイロ'], timezone: 'Africa/Cairo' },
+            { name: 'Johannesburg', country: 'South Africa', local: ['Jo\'burg', 'Joburg', 'ヨハネスブルグ'], timezone: 'Africa/Johannesburg' },
+            { name: 'Lagos', country: 'Nigeria', local: ['ラゴス'], timezone: 'Africa/Lagos' },
+            { name: 'Nairobi', country: 'Kenya', local: ['ナイロビ'], timezone: 'Africa/Nairobi' },
+            { name: 'Istanbul', country: 'Turkey', local: ['İstanbul', 'Estambul', 'イスタンブール', 'Стамбул'], timezone: 'Europe/Istanbul' },
+            { name: 'Tel Aviv', country: 'Israel', local: ['תל אביב', 'テルアビブ'], timezone: 'Asia/Jerusalem' },
+            { name: 'Jakarta', country: 'Indonesia', local: ['ジャカルタ'], timezone: 'Asia/Jakarta' },
+            { name: 'Kuala Lumpur', country: 'Malaysia', local: ['KL', 'クアラルンプール'], timezone: 'Asia/Kuala_Lumpur' },
+            { name: 'Manila', country: 'Philippines', local: ['マニラ'], timezone: 'Asia/Manila' },
+            { name: 'Ho Chi Minh City', country: 'Vietnam', local: ['Saigon', 'ホーチミン'], timezone: 'Asia/Ho_Chi_Minh' },
+            { name: 'Taipei', country: 'Taiwan', local: ['台北', 'タイペイ'], timezone: 'Asia/Taipei' },
+            { name: 'Warsaw', country: 'Poland', local: ['Warszawa', 'Varsovie', 'ワルシャワ'], timezone: 'Europe/Warsaw' },
+            { name: 'Prague', country: 'Czech Republic', local: ['Praha', 'Praga', 'プラハ'], timezone: 'Europe/Prague' },
+            { name: 'Vienna', country: 'Austria', local: ['Wien', 'Vienne', 'ウィーン'], timezone: 'Europe/Vienna' },
+            { name: 'Stockholm', country: 'Sweden', local: ['ストックホルム'], timezone: 'Europe/Stockholm' },
+            { name: 'Copenhagen', country: 'Denmark', local: ['København', 'Copenhague', 'コペンハーゲン'], timezone: 'Europe/Copenhagen' },
+            { name: 'Oslo', country: 'Norway', local: ['オスロ'], timezone: 'Europe/Oslo' },
+            { name: 'Helsinki', country: 'Finland', local: ['ヘルシンキ'], timezone: 'Europe/Helsinki' },
+            { name: 'Dublin', country: 'Ireland', local: ['Baile Átha Cliath', 'ダブリン'], timezone: 'Europe/Dublin' },
+            { name: 'Lisbon', country: 'Portugal', local: ['Lisboa', 'リスボン'], timezone: 'Europe/Lisbon' },
+            { name: 'Athens', country: 'Greece', local: ['Αθήνα', 'Atenas', 'Athènes', 'アテネ'], timezone: 'Europe/Athens' },
+            { name: 'Brussels', country: 'Belgium', local: ['Bruxelles', 'Brussel', 'Bruselas', 'ブリュッセル'], timezone: 'Europe/Brussels' }
+        ];
+
+        // Common typos and corrections
+        const typoCorrections = {
+            'newyork': 'New York', 'new york': 'New York', 'nyc': 'New York',
+            'la': 'Los Angeles', 'l.a.': 'Los Angeles', 'losangeles': 'Los Angeles',
+            'sf': 'San Francisco', 'sanfrancisco': 'San Francisco',
+            'tokio': 'Tokyo', 'toko': 'Tokyo', 'tokyio': 'Tokyo',
+            'peking': 'Beijing', 'bejing': 'Beijing', 'beijng': 'Beijing',
+            'shanhai': 'Shanghai', 'shangai': 'Shanghai',
+            'singpore': 'Singapore', 'singapur': 'Singapore',
+            'sydny': 'Sydney', 'syndey': 'Sydney',
+            'melborne': 'Melbourne', 'melbounre': 'Melbourne',
+            'dubei': 'Dubai', 'duabi': 'Dubai',
+            'deli': 'Delhi', 'dehli': 'Delhi',
+            'bombai': 'Mumbai', 'mombai': 'Mumbai',
+            'soul': 'Seoul', 'seol': 'Seoul',
+            'bankok': 'Bangkok', 'bangok': 'Bangkok',
+            'mosco': 'Moscow', 'moskow': 'Moscow', 'moskva': 'Moscow',
+            'berln': 'Berlin', 'berlín': 'Berlin',
+            'munchen': 'Munich', 'muenchen': 'Munich', 'münchen': 'Munich',
+            'frankfrt': 'Frankfurt', 'frankfort': 'Frankfurt',
+            'parigi': 'Paris', 'pariz': 'Paris',
+            'londre': 'London', 'londan': 'London', 'londen': 'London',
+            'roma': 'Rome', 'rom': 'Rome',
+            'milano': 'Milan', 'mailand': 'Milan',
+            'madrit': 'Madrid', 'marid': 'Madrid',
+            'barcellona': 'Barcelona', 'barca': 'Barcelona',
+            'amsterdm': 'Amsterdam', 'amsterdan': 'Amsterdam',
+            'zurick': 'Zurich', 'zuerich': 'Zurich', 'zürich': 'Zurich',
+            'geneve': 'Geneva', 'genf': 'Geneva', 'ginevra': 'Geneva',
+            'toronot': 'Toronto', 'tornoto': 'Toronto',
+            'vancover': 'Vancouver', 'vancuver': 'Vancouver',
+            'saopaulo': 'Sao Paulo', 'são paulo': 'Sao Paulo', 'san paulo': 'Sao Paulo',
+            'rio': 'Rio de Janeiro', 'río de janeiro': 'Rio de Janeiro',
+            'mexicocity': 'Mexico City', 'cdmx': 'Mexico City',
+            'buenosaires': 'Buenos Aires', 'buenos aries': 'Buenos Aires',
+            'cario': 'Cairo', 'kairo': 'Cairo',
+            'joburg': 'Johannesburg', 'jhb': 'Johannesburg',
+            'istambul': 'Istanbul', 'instanbul': 'Istanbul', 'istanbul': 'Istanbul',
+            'telaviv': 'Tel Aviv', 'tel-aviv': 'Tel Aviv',
+            'kualalumpur': 'Kuala Lumpur', 'kl': 'Kuala Lumpur',
+            'saigon': 'Ho Chi Minh City', 'hochiminh': 'Ho Chi Minh City',
+            'taipe': 'Taipei', 'taipie': 'Taipei',
+            'warsawa': 'Warsaw', 'warsav': 'Warsaw',
+            'praga': 'Prague', 'praha': 'Prague',
+            'wien': 'Vienna', 'viena': 'Vienna',
+            'copenhagn': 'Copenhagen', 'kobenhavn': 'Copenhagen', 'københavn': 'Copenhagen',
+            'helsiki': 'Helsinki', 'helsinky': 'Helsinki',
+            'dubln': 'Dublin', 'doublin': 'Dublin',
+            'lisboa': 'Lisbon', 'lissabon': 'Lisbon',
+            'athenes': 'Athens', 'atenas': 'Athens', 'athina': 'Athens',
+            'bruxelles': 'Brussels', 'brussel': 'Brussels', 'bruselas': 'Brussels',
+            // Country name variants
+            'deutschland': 'Germany', 'alemania': 'Germany', 'allemagne': 'Germany',
+            'francia': 'France', 'frankreich': 'France',
+            'italia': 'Italy', 'italien': 'Italy', 'italie': 'Italy',
+            'espana': 'Spain', 'españa': 'Spain', 'spanien': 'Spain', 'espagne': 'Spain',
+            'japon': 'Japan', 'japón': 'Japan', 'giappone': 'Japan', 'nippon': 'Japan',
+            'brasil': 'Brazil', 'brasilien': 'Brazil', 'brésil': 'Brazil',
+            'rusia': 'Russia', 'russie': 'Russia', 'russland': 'Russia',
+            'corea': 'South Korea', 'coréia': 'South Korea',
+            'turquia': 'Turkey', 'türkiye': 'Turkey', 'turquie': 'Turkey',
+            'paises bajos': 'Netherlands', 'holanda': 'Netherlands', 'holland': 'Netherlands',
+            'suiza': 'Switzerland', 'schweiz': 'Switzerland', 'suisse': 'Switzerland', 'svizzera': 'Switzerland',
+            'grecia': 'Greece', 'griechenland': 'Greece', 'grèce': 'Greece',
+            'polska': 'Poland', 'pologne': 'Poland', 'polen': 'Poland',
+            'belgica': 'Belgium', 'belgien': 'Belgium', 'belgique': 'Belgium',
+            'osterreich': 'Austria', 'österreich': 'Austria', 'autriche': 'Austria'
+        };
+
+        let autocompleteSelectedIndex = -1;
+        let autocompleteDebounceTimer = null;
+
+        // Levenshtein distance for fuzzy matching
+        function levenshteinDistance(a, b) {
+            if (a.length === 0) return b.length;
+            if (b.length === 0) return a.length;
+
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) {
+                matrix[i] = [i];
+            }
+            for (let j = 0; j <= a.length; j++) {
+                matrix[0][j] = j;
+            }
+
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        // Normalize string for comparison (remove accents, lowercase)
+        function normalizeString(str) {
+            return str.toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^\w\s]/g, '')
+                .trim();
+        }
+
+        // Search cities with fuzzy matching
+        function searchCities(query) {
+            if (!query || query.length < 2) return [];
+
+            const normalizedQuery = normalizeString(query);
+            const results = [];
+
+            // Check for typo corrections first
+            const correctedQuery = typoCorrections[normalizedQuery] || typoCorrections[query.toLowerCase()];
+            if (correctedQuery) {
+                const city = popularCities.find(c => c.name.toLowerCase() === correctedQuery.toLowerCase());
+                if (city) {
+                    results.push({ ...city, matchType: 'corrected', original: query });
+                }
+            }
+
+            // Search through popular cities
+            for (const city of popularCities) {
+                const normalizedName = normalizeString(city.name);
+                const normalizedCountry = normalizeString(city.country);
+
+                // Exact match
+                if (normalizedName.startsWith(normalizedQuery) || normalizedCountry.startsWith(normalizedQuery)) {
+                    if (!results.find(r => r.name === city.name)) {
+                        results.push({ ...city, matchType: 'exact' });
+                    }
+                    continue;
+                }
+
+                // Check local names
+                const localMatch = city.local.find(l => normalizeString(l).startsWith(normalizedQuery));
+                if (localMatch) {
+                    if (!results.find(r => r.name === city.name)) {
+                        results.push({ ...city, matchType: 'local', matchedName: localMatch });
+                    }
+                    continue;
+                }
+
+                // Fuzzy match (only for queries 3+ chars)
+                if (query.length >= 3) {
+                    const distance = levenshteinDistance(normalizedQuery, normalizedName.slice(0, normalizedQuery.length + 2));
+                    if (distance <= 2 && !results.find(r => r.name === city.name)) {
+                        results.push({ ...city, matchType: 'fuzzy', distance });
+                    }
+                }
+            }
+
+            // Sort: exact matches first, then local, then fuzzy (by distance)
+            results.sort((a, b) => {
+                const order = { exact: 0, corrected: 1, local: 2, fuzzy: 3 };
+                if (order[a.matchType] !== order[b.matchType]) {
+                    return order[a.matchType] - order[b.matchType];
+                }
+                if (a.matchType === 'fuzzy') {
+                    return (a.distance || 0) - (b.distance || 0);
+                }
+                return 0;
+            });
+
+            return results.slice(0, 8);
+        }
+
+        // Render autocomplete dropdown
+        function renderAutocomplete(results) {
+            const dropdown = document.getElementById('autocomplete-list');
+            if (results.length === 0) {
+                dropdown.classList.remove('visible');
+                return;
+            }
+
+            dropdown.innerHTML = results.map((city, index) => {
+                let badge = '';
+                if (city.matchType === 'corrected') {
+                    badge = `<span class="match-type">Did you mean?</span>`;
+                } else if (city.matchType === 'local' && city.matchedName) {
+                    badge = `<span class="city-local">(${city.matchedName})</span>`;
+                }
+
+                return `
+                    <div class="autocomplete-item ${index === autocompleteSelectedIndex ? 'selected' : ''}"
+                         role="option"
+                         data-city="${sanitizeInput(city.name)}"
+                         onclick="selectAutocomplete('${sanitizeInput(city.name)}')"
+                         onmouseenter="autocompleteSelectedIndex = ${index}; highlightAutocomplete()">
+                        <div>
+                            <span class="city-name">${sanitizeInput(city.name)}</span>
+                            <span class="city-country">${sanitizeInput(city.country)}</span>
+                            ${badge}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            dropdown.classList.add('visible');
+        }
+
+        // Highlight selected autocomplete item
+        function highlightAutocomplete() {
+            const items = document.querySelectorAll('.autocomplete-item');
+            items.forEach((item, i) => {
+                item.classList.toggle('selected', i === autocompleteSelectedIndex);
+            });
+        }
+
+        // Select autocomplete item
+        function selectAutocomplete(cityName) {
+            document.getElementById('cityInput').value = cityName;
+            document.getElementById('autocomplete-list').classList.remove('visible');
+            autocompleteSelectedIndex = -1;
+            updateCity();
+        }
+
+        // Handle autocomplete keyboard navigation
+        function handleAutocompleteKeydown(e) {
+            const dropdown = document.getElementById('autocomplete-list');
+            const items = dropdown.querySelectorAll('.autocomplete-item');
+
+            if (!dropdown.classList.contains('visible') || items.length === 0) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    updateCity();
+                }
+                return;
+            }
+
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    autocompleteSelectedIndex = Math.min(autocompleteSelectedIndex + 1, items.length - 1);
+                    highlightAutocomplete();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    autocompleteSelectedIndex = Math.max(autocompleteSelectedIndex - 1, -1);
+                    highlightAutocomplete();
+                    break;
+                case 'Enter':
+                    e.preventDefault();
+                    if (autocompleteSelectedIndex >= 0 && items[autocompleteSelectedIndex]) {
+                        const cityName = items[autocompleteSelectedIndex].dataset.city;
+                        selectAutocomplete(cityName);
+                    } else {
+                        dropdown.classList.remove('visible');
+                        updateCity();
+                    }
+                    break;
+                case 'Escape':
+                    dropdown.classList.remove('visible');
+                    autocompleteSelectedIndex = -1;
+                    break;
+            }
+        }
+
+        // Country to Capital mapping with alternative cities
+        const countryData = {
+            'united states': { capital: 'Washington D.C.', timezone: 'America/New_York', alternatives: ['New York', 'Los Angeles', 'Chicago'] },
+            'usa': { capital: 'Washington D.C.', timezone: 'America/New_York', alternatives: ['New York', 'Los Angeles', 'Chicago'] },
+            'us': { capital: 'Washington D.C.', timezone: 'America/New_York', alternatives: ['New York', 'Los Angeles', 'Chicago'] },
+            'united kingdom': { capital: 'London', timezone: 'Europe/London', alternatives: ['Edinburgh', 'Manchester', 'Birmingham'] },
+            'uk': { capital: 'London', timezone: 'Europe/London', alternatives: ['Edinburgh', 'Manchester', 'Birmingham'] },
+            'britain': { capital: 'London', timezone: 'Europe/London', alternatives: ['Edinburgh', 'Manchester', 'Birmingham'] },
+            'france': { capital: 'Paris', timezone: 'Europe/Paris', alternatives: ['Lyon', 'Marseille', 'Nice'] },
+            'germany': { capital: 'Berlin', timezone: 'Europe/Berlin', alternatives: ['Frankfurt', 'Munich', 'Hamburg'] },
+            'italy': { capital: 'Rome', timezone: 'Europe/Rome', alternatives: ['Milan', 'Florence', 'Venice'] },
+            'spain': { capital: 'Madrid', timezone: 'Europe/Madrid', alternatives: ['Barcelona', 'Seville', 'Valencia'] },
+            'japan': { capital: 'Tokyo', timezone: 'Asia/Tokyo', alternatives: ['Osaka', 'Kyoto', 'Yokohama'] },
+            'china': { capital: 'Beijing', timezone: 'Asia/Shanghai', alternatives: ['Shanghai', 'Hong Kong', 'Shenzhen'] },
+            'india': { capital: 'New Delhi', timezone: 'Asia/Kolkata', alternatives: ['Mumbai', 'Bangalore', 'Chennai'] },
+            'australia': { capital: 'Canberra', timezone: 'Australia/Sydney', alternatives: ['Sydney', 'Melbourne', 'Perth'] },
+            'canada': { capital: 'Ottawa', timezone: 'America/Toronto', alternatives: ['Toronto', 'Vancouver', 'Montreal'] },
+            'brazil': { capital: 'Brasilia', timezone: 'America/Sao_Paulo', alternatives: ['Sao Paulo', 'Rio de Janeiro', 'Salvador'] },
+            'russia': { capital: 'Moscow', timezone: 'Europe/Moscow', alternatives: ['St Petersburg', 'Novosibirsk', 'Vladivostok'] },
+            'south korea': { capital: 'Seoul', timezone: 'Asia/Seoul', alternatives: ['Busan', 'Incheon', 'Daegu'] },
+            'korea': { capital: 'Seoul', timezone: 'Asia/Seoul', alternatives: ['Busan', 'Incheon', 'Daegu'] },
+            'mexico': { capital: 'Mexico City', timezone: 'America/Mexico_City', alternatives: ['Guadalajara', 'Monterrey', 'Cancun'] },
+            'netherlands': { capital: 'Amsterdam', timezone: 'Europe/Amsterdam', alternatives: ['Rotterdam', 'The Hague', 'Utrecht'] },
+            'switzerland': { capital: 'Bern', timezone: 'Europe/Zurich', alternatives: ['Zurich', 'Geneva', 'Basel'] },
+            'singapore': { capital: 'Singapore', timezone: 'Asia/Singapore', alternatives: [] },
+            'uae': { capital: 'Abu Dhabi', timezone: 'Asia/Dubai', alternatives: ['Dubai', 'Sharjah', 'Ajman'] },
+            'united arab emirates': { capital: 'Abu Dhabi', timezone: 'Asia/Dubai', alternatives: ['Dubai', 'Sharjah', 'Ajman'] },
+            'saudi arabia': { capital: 'Riyadh', timezone: 'Asia/Riyadh', alternatives: ['Jeddah', 'Mecca', 'Medina'] },
+            'south africa': { capital: 'Pretoria', timezone: 'Africa/Johannesburg', alternatives: ['Johannesburg', 'Cape Town', 'Durban'] },
+            'argentina': { capital: 'Buenos Aires', timezone: 'America/Argentina/Buenos_Aires', alternatives: ['Cordoba', 'Rosario', 'Mendoza'] },
+            'indonesia': { capital: 'Jakarta', timezone: 'Asia/Jakarta', alternatives: ['Surabaya', 'Bandung', 'Bali'] },
+            'thailand': { capital: 'Bangkok', timezone: 'Asia/Bangkok', alternatives: ['Chiang Mai', 'Phuket', 'Pattaya'] },
+            'vietnam': { capital: 'Hanoi', timezone: 'Asia/Ho_Chi_Minh', alternatives: ['Ho Chi Minh City', 'Da Nang', 'Hue'] },
+            'malaysia': { capital: 'Kuala Lumpur', timezone: 'Asia/Kuala_Lumpur', alternatives: ['George Town', 'Johor Bahru', 'Kota Kinabalu'] },
+            'philippines': { capital: 'Manila', timezone: 'Asia/Manila', alternatives: ['Cebu', 'Davao', 'Quezon City'] },
+            'egypt': { capital: 'Cairo', timezone: 'Africa/Cairo', alternatives: ['Alexandria', 'Giza', 'Luxor'] },
+            'turkey': { capital: 'Ankara', timezone: 'Europe/Istanbul', alternatives: ['Istanbul', 'Izmir', 'Antalya'] },
+            'poland': { capital: 'Warsaw', timezone: 'Europe/Warsaw', alternatives: ['Krakow', 'Gdansk', 'Wroclaw'] },
+            'sweden': { capital: 'Stockholm', timezone: 'Europe/Stockholm', alternatives: ['Gothenburg', 'Malmo', 'Uppsala'] },
+            'norway': { capital: 'Oslo', timezone: 'Europe/Oslo', alternatives: ['Bergen', 'Trondheim', 'Stavanger'] },
+            'denmark': { capital: 'Copenhagen', timezone: 'Europe/Copenhagen', alternatives: ['Aarhus', 'Odense', 'Aalborg'] },
+            'finland': { capital: 'Helsinki', timezone: 'Europe/Helsinki', alternatives: ['Tampere', 'Turku', 'Oulu'] },
+            'ireland': { capital: 'Dublin', timezone: 'Europe/Dublin', alternatives: ['Cork', 'Galway', 'Limerick'] },
+            'portugal': { capital: 'Lisbon', timezone: 'Europe/Lisbon', alternatives: ['Porto', 'Faro', 'Braga'] },
+            'greece': { capital: 'Athens', timezone: 'Europe/Athens', alternatives: ['Thessaloniki', 'Patras', 'Heraklion'] },
+            'austria': { capital: 'Vienna', timezone: 'Europe/Vienna', alternatives: ['Salzburg', 'Innsbruck', 'Graz'] },
+            'belgium': { capital: 'Brussels', timezone: 'Europe/Brussels', alternatives: ['Antwerp', 'Ghent', 'Bruges'] },
+            'czech republic': { capital: 'Prague', timezone: 'Europe/Prague', alternatives: ['Brno', 'Ostrava', 'Pilsen'] },
+            'czechia': { capital: 'Prague', timezone: 'Europe/Prague', alternatives: ['Brno', 'Ostrava', 'Pilsen'] },
+            'new zealand': { capital: 'Wellington', timezone: 'Pacific/Auckland', alternatives: ['Auckland', 'Christchurch', 'Queenstown'] },
+            'israel': { capital: 'Jerusalem', timezone: 'Asia/Jerusalem', alternatives: ['Tel Aviv', 'Haifa', 'Eilat'] },
+            'qatar': { capital: 'Doha', timezone: 'Asia/Qatar', alternatives: [] },
+            'kuwait': { capital: 'Kuwait City', timezone: 'Asia/Kuwait', alternatives: [] },
+            'pakistan': { capital: 'Islamabad', timezone: 'Asia/Karachi', alternatives: ['Karachi', 'Lahore', 'Faisalabad'] },
+            'bangladesh': { capital: 'Dhaka', timezone: 'Asia/Dhaka', alternatives: ['Chittagong', 'Khulna', 'Sylhet'] },
+            'nigeria': { capital: 'Abuja', timezone: 'Africa/Lagos', alternatives: ['Lagos', 'Kano', 'Ibadan'] },
+            'kenya': { capital: 'Nairobi', timezone: 'Africa/Nairobi', alternatives: ['Mombasa', 'Kisumu', 'Nakuru'] },
+            'morocco': { capital: 'Rabat', timezone: 'Africa/Casablanca', alternatives: ['Casablanca', 'Marrakech', 'Fes'] },
+            'chile': { capital: 'Santiago', timezone: 'America/Santiago', alternatives: ['Valparaiso', 'Concepcion', 'Antofagasta'] },
+            'colombia': { capital: 'Bogota', timezone: 'America/Bogota', alternatives: ['Medellin', 'Cali', 'Cartagena'] },
+            'peru': { capital: 'Lima', timezone: 'America/Lima', alternatives: ['Arequipa', 'Cusco', 'Trujillo'] },
+            'taiwan': { capital: 'Taipei', timezone: 'Asia/Taipei', alternatives: ['Kaohsiung', 'Taichung', 'Tainan'] },
+            'hong kong': { capital: 'Hong Kong', timezone: 'Asia/Hong_Kong', alternatives: [] }
+        };
+
+        // Market holidays for 2024-2025 (major holidays)
+        const marketHolidays = {
+            'NYSE': [
+                '2024-01-01', '2024-01-15', '2024-02-19', '2024-03-29', '2024-05-27',
+                '2024-06-19', '2024-07-04', '2024-09-02', '2024-11-28', '2024-12-25',
+                '2025-01-01', '2025-01-20', '2025-02-17', '2025-04-18', '2025-05-26',
+                '2025-06-19', '2025-07-04', '2025-09-01', '2025-11-27', '2025-12-25'
+            ],
+            'NASDAQ': [
+                '2024-01-01', '2024-01-15', '2024-02-19', '2024-03-29', '2024-05-27',
+                '2024-06-19', '2024-07-04', '2024-09-02', '2024-11-28', '2024-12-25',
+                '2025-01-01', '2025-01-20', '2025-02-17', '2025-04-18', '2025-05-26',
+                '2025-06-19', '2025-07-04', '2025-09-01', '2025-11-27', '2025-12-25'
+            ],
+            'LSE': [
+                '2024-01-01', '2024-03-29', '2024-04-01', '2024-05-06', '2024-05-27',
+                '2024-08-26', '2024-12-25', '2024-12-26',
+                '2025-01-01', '2025-04-18', '2025-04-21', '2025-05-05', '2025-05-26',
+                '2025-08-25', '2025-12-25', '2025-12-26'
+            ],
+            'TSE': [
+                '2024-01-01', '2024-01-02', '2024-01-03', '2024-01-08', '2024-02-11',
+                '2024-02-23', '2024-03-20', '2024-04-29', '2024-05-03', '2024-05-04',
+                '2024-05-05', '2024-05-06', '2024-07-15', '2024-08-11', '2024-09-16',
+                '2024-09-22', '2024-09-23', '2024-10-14', '2024-11-03', '2024-11-04',
+                '2024-11-23', '2024-12-31',
+                '2025-01-01', '2025-01-02', '2025-01-03', '2025-01-13', '2025-02-11',
+                '2025-02-23', '2025-02-24', '2025-03-20', '2025-04-29', '2025-05-03',
+                '2025-05-04', '2025-05-05', '2025-05-06', '2025-07-21', '2025-08-11',
+                '2025-09-15', '2025-09-23', '2025-10-13', '2025-11-03', '2025-11-23',
+                '2025-11-24', '2025-12-31'
+            ],
+            'HKEX': [
+                '2024-01-01', '2024-02-10', '2024-02-11', '2024-02-12', '2024-02-13',
+                '2024-03-29', '2024-04-01', '2024-04-04', '2024-05-01', '2024-05-15',
+                '2024-06-10', '2024-07-01', '2024-09-18', '2024-10-01', '2024-10-11',
+                '2024-12-25', '2024-12-26',
+                '2025-01-01', '2025-01-29', '2025-01-30', '2025-01-31', '2025-04-04',
+                '2025-04-18', '2025-04-21', '2025-05-01', '2025-05-05', '2025-05-31',
+                '2025-07-01', '2025-10-01', '2025-10-07', '2025-12-25', '2025-12-26'
+            ],
+            'SSE': [
+                '2024-01-01', '2024-02-09', '2024-02-10', '2024-02-11', '2024-02-12',
+                '2024-02-13', '2024-02-14', '2024-02-15', '2024-02-16', '2024-02-17',
+                '2024-04-04', '2024-04-05', '2024-04-06', '2024-05-01', '2024-05-02',
+                '2024-05-03', '2024-05-04', '2024-05-05', '2024-06-08', '2024-06-09',
+                '2024-06-10', '2024-09-15', '2024-09-16', '2024-09-17', '2024-10-01',
+                '2024-10-02', '2024-10-03', '2024-10-04', '2024-10-05', '2024-10-06',
+                '2024-10-07',
+                '2025-01-01', '2025-01-28', '2025-01-29', '2025-01-30', '2025-01-31',
+                '2025-02-01', '2025-02-02', '2025-02-03', '2025-02-04', '2025-04-04',
+                '2025-04-05', '2025-04-06', '2025-05-01', '2025-05-02', '2025-05-03',
+                '2025-05-04', '2025-05-05', '2025-05-31', '2025-06-01', '2025-06-02',
+                '2025-10-01', '2025-10-02', '2025-10-03', '2025-10-04', '2025-10-05',
+                '2025-10-06', '2025-10-07'
+            ],
+            'XETRA': [
+                '2024-01-01', '2024-03-29', '2024-04-01', '2024-05-01', '2024-12-24',
+                '2024-12-25', '2024-12-26', '2024-12-31',
+                '2025-01-01', '2025-04-18', '2025-04-21', '2025-05-01', '2025-12-24',
+                '2025-12-25', '2025-12-26', '2025-12-31'
+            ],
+            'EURONEXT': [
+                '2024-01-01', '2024-03-29', '2024-04-01', '2024-05-01', '2024-12-25',
+                '2024-12-26',
+                '2025-01-01', '2025-04-18', '2025-04-21', '2025-05-01', '2025-12-25',
+                '2025-12-26'
+            ],
+            'SIX': [
+                '2024-01-01', '2024-01-02', '2024-03-29', '2024-04-01', '2024-05-01',
+                '2024-05-09', '2024-05-20', '2024-08-01', '2024-12-24', '2024-12-25',
+                '2024-12-26', '2024-12-31',
+                '2025-01-01', '2025-01-02', '2025-04-18', '2025-04-21', '2025-05-01',
+                '2025-05-29', '2025-06-09', '2025-08-01', '2025-12-24', '2025-12-25',
+                '2025-12-26', '2025-12-31'
+            ],
+            'ASX': [
+                '2024-01-01', '2024-01-26', '2024-03-29', '2024-04-01', '2024-04-25',
+                '2024-06-10', '2024-12-25', '2024-12-26',
+                '2025-01-01', '2025-01-27', '2025-04-18', '2025-04-21', '2025-04-25',
+                '2025-06-09', '2025-12-25', '2025-12-26'
+            ],
+            'SGX': [
+                '2024-01-01', '2024-02-10', '2024-02-11', '2024-03-29', '2024-04-10',
+                '2024-05-01', '2024-05-22', '2024-06-17', '2024-08-09', '2024-10-31',
+                '2024-12-25',
+                '2025-01-01', '2025-01-29', '2025-01-30', '2025-03-31', '2025-04-18',
+                '2025-05-01', '2025-05-12', '2025-06-06', '2025-08-09', '2025-10-20',
+                '2025-11-01', '2025-12-25'
+            ],
+            'BSE': [
+                '2024-01-26', '2024-03-08', '2024-03-25', '2024-03-29', '2024-04-11',
+                '2024-04-14', '2024-04-17', '2024-04-21', '2024-05-01', '2024-05-23',
+                '2024-06-17', '2024-07-17', '2024-08-15', '2024-10-02', '2024-11-01',
+                '2024-11-15', '2024-12-25',
+                '2025-01-26', '2025-02-26', '2025-03-14', '2025-03-31', '2025-04-10',
+                '2025-04-14', '2025-04-18', '2025-05-01', '2025-08-15', '2025-08-27',
+                '2025-10-02', '2025-10-21', '2025-10-22', '2025-11-05', '2025-12-25'
+            ],
+            'KRX': [
+                '2024-01-01', '2024-02-09', '2024-02-10', '2024-02-11', '2024-02-12',
+                '2024-03-01', '2024-04-10', '2024-05-01', '2024-05-06', '2024-05-15',
+                '2024-06-06', '2024-08-15', '2024-09-16', '2024-09-17', '2024-09-18',
+                '2024-10-03', '2024-10-09', '2024-12-25',
+                '2025-01-01', '2025-01-28', '2025-01-29', '2025-01-30', '2025-03-01',
+                '2025-03-03', '2025-05-01', '2025-05-05', '2025-05-06', '2025-06-06',
+                '2025-08-15', '2025-10-03', '2025-10-06', '2025-10-07', '2025-10-08',
+                '2025-10-09', '2025-12-25'
+            ],
+            'TSX': [
+                '2024-01-01', '2024-02-19', '2024-03-29', '2024-05-20', '2024-07-01',
+                '2024-08-05', '2024-09-02', '2024-10-14', '2024-12-25', '2024-12-26',
+                '2025-01-01', '2025-02-17', '2025-04-18', '2025-05-19', '2025-07-01',
+                '2025-08-04', '2025-09-01', '2025-10-13', '2025-12-25', '2025-12-26'
+            ],
+            'BMV': [
+                '2024-01-01', '2024-02-05', '2024-03-18', '2024-03-28', '2024-03-29',
+                '2024-05-01', '2024-09-16', '2024-11-18', '2024-12-12', '2024-12-25',
+                '2025-01-01', '2025-02-03', '2025-03-17', '2025-04-17', '2025-04-18',
+                '2025-05-01', '2025-09-16', '2025-11-17', '2025-12-12', '2025-12-25'
+            ],
+            'B3': [
+                '2024-01-01', '2024-02-12', '2024-02-13', '2024-03-29', '2024-04-21',
+                '2024-05-01', '2024-05-30', '2024-07-09', '2024-09-07', '2024-10-12',
+                '2024-11-02', '2024-11-15', '2024-11-20', '2024-12-24', '2024-12-25',
+                '2024-12-31',
+                '2025-01-01', '2025-03-03', '2025-03-04', '2025-04-18', '2025-04-21',
+                '2025-05-01', '2025-06-19', '2025-09-07', '2025-10-12', '2025-11-02',
+                '2025-11-15', '2025-11-20', '2025-12-24', '2025-12-25', '2025-12-31'
+            ],
+            'TASE': [
+                '2024-03-24', '2024-03-25', '2024-04-22', '2024-04-23', '2024-04-28',
+                '2024-04-29', '2024-05-14', '2024-06-11', '2024-06-12', '2024-08-13',
+                '2024-10-03', '2024-10-04', '2024-10-09', '2024-10-10', '2024-10-11',
+                '2024-10-16', '2024-10-17', '2024-10-23', '2024-10-24',
+                '2025-03-13', '2025-03-14', '2025-04-12', '2025-04-13', '2025-04-18',
+                '2025-05-01', '2025-05-02', '2025-06-01', '2025-06-02', '2025-08-03',
+                '2025-09-22', '2025-09-23', '2025-10-01', '2025-10-02', '2025-10-06',
+                '2025-10-07', '2025-10-13', '2025-10-14'
+            ],
+            'JSE': [
+                '2024-01-01', '2024-03-21', '2024-03-29', '2024-04-01', '2024-04-27',
+                '2024-05-01', '2024-06-16', '2024-06-17', '2024-08-09', '2024-09-24',
+                '2024-12-16', '2024-12-25', '2024-12-26',
+                '2025-01-01', '2025-03-21', '2025-04-18', '2025-04-21', '2025-04-28',
+                '2025-05-01', '2025-06-16', '2025-08-09', '2025-09-24', '2025-12-16',
+                '2025-12-25', '2025-12-26'
+            ],
+            'TADAWUL': [
+                '2024-02-22', '2024-04-08', '2024-04-09', '2024-04-10', '2024-06-15',
+                '2024-06-16', '2024-06-17', '2024-06-18', '2024-09-23',
+                '2025-01-28', '2025-03-28', '2025-03-29', '2025-03-30', '2025-03-31',
+                '2025-06-05', '2025-06-06', '2025-06-07', '2025-06-08', '2025-09-23'
+            ],
+            'TWSE': [
+                '2024-01-01', '2024-02-08', '2024-02-09', '2024-02-10', '2024-02-11',
+                '2024-02-12', '2024-02-13', '2024-02-14', '2024-02-28', '2024-04-04',
+                '2024-04-05', '2024-05-01', '2024-06-10', '2024-09-17', '2024-10-10',
+                '2025-01-01', '2025-01-27', '2025-01-28', '2025-01-29', '2025-01-30',
+                '2025-01-31', '2025-02-28', '2025-04-03', '2025-04-04', '2025-05-01',
+                '2025-05-30', '2025-10-06', '2025-10-10'
+            ],
+            'IDX': [
+                '2024-01-01', '2024-02-08', '2024-02-09', '2024-03-11', '2024-03-12',
+                '2024-03-28', '2024-03-29', '2024-04-08', '2024-04-09', '2024-04-10',
+                '2024-04-11', '2024-04-12', '2024-05-01', '2024-05-09', '2024-05-23',
+                '2024-06-01', '2024-06-17', '2024-06-18', '2024-08-17', '2024-12-25',
+                '2024-12-26',
+                '2025-01-01', '2025-01-27', '2025-01-28', '2025-01-29', '2025-01-30',
+                '2025-01-31', '2025-03-28', '2025-03-29', '2025-03-30', '2025-03-31',
+                '2025-04-01', '2025-04-18', '2025-05-01', '2025-05-12', '2025-05-29',
+                '2025-06-01', '2025-06-06', '2025-06-07', '2025-08-17', '2025-12-25',
+                '2025-12-26'
+            ]
+        };
+
+        // Market data with trading hours in LOCAL TIME
         const markets = [
+            // Americas
             {
-                name: "NYSE (New York Stock Exchange)",
+                name: "NYSE",
+                fullName: "New York Stock Exchange",
                 symbol: "NYSE",
+                region: "americas",
                 timezone: "America/New_York",
-                openHour: 14, openMinute: 30, // 9:30 AM EST in UTC
-                closeHour: 21, closeMinute: 0,  // 4:00 PM EST in UTC
-                daysOpen: [1, 2, 3, 4, 5] // Monday to Friday
-            },
-            {
-                name: "NASDAQ",
-                symbol: "NASDAQ",
-                timezone: "America/New_York",
-                openHour: 14, openMinute: 30,
-                closeHour: 21, closeMinute: 0,
+                openHour: 9, openMinute: 30,
+                closeHour: 16, closeMinute: 0,
                 daysOpen: [1, 2, 3, 4, 5]
             },
             {
-                name: "London Stock Exchange",
+                name: "NASDAQ",
+                fullName: "NASDAQ Stock Market",
+                symbol: "NASDAQ",
+                region: "americas",
+                timezone: "America/New_York",
+                openHour: 9, openMinute: 30,
+                closeHour: 16, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "TSX",
+                fullName: "Toronto Stock Exchange",
+                symbol: "TSX",
+                region: "americas",
+                timezone: "America/Toronto",
+                openHour: 9, openMinute: 30,
+                closeHour: 16, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "BMV",
+                fullName: "Mexican Stock Exchange",
+                symbol: "BMV",
+                region: "americas",
+                timezone: "America/Mexico_City",
+                openHour: 8, openMinute: 30,
+                closeHour: 15, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "B3",
+                fullName: "B3 - Brasil Bolsa Balcao",
+                symbol: "B3",
+                region: "americas",
+                timezone: "America/Sao_Paulo",
+                openHour: 10, openMinute: 0,
+                closeHour: 17, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            // Europe
+            {
+                name: "LSE",
+                fullName: "London Stock Exchange",
                 symbol: "LSE",
+                region: "europe",
                 timezone: "Europe/London",
                 openHour: 8, openMinute: 0,
                 closeHour: 16, closeMinute: 30,
                 daysOpen: [1, 2, 3, 4, 5]
             },
             {
-                name: "Tokyo Stock Exchange",
+                name: "XETRA",
+                fullName: "Frankfurt Stock Exchange",
+                symbol: "XETRA",
+                region: "europe",
+                timezone: "Europe/Berlin",
+                openHour: 9, openMinute: 0,
+                closeHour: 17, closeMinute: 30,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "EURONEXT",
+                fullName: "Euronext Paris",
+                symbol: "EURONEXT",
+                region: "europe",
+                timezone: "Europe/Paris",
+                openHour: 9, openMinute: 0,
+                closeHour: 17, closeMinute: 30,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "SIX",
+                fullName: "SIX Swiss Exchange",
+                symbol: "SIX",
+                region: "europe",
+                timezone: "Europe/Zurich",
+                openHour: 9, openMinute: 0,
+                closeHour: 17, closeMinute: 30,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "TASE",
+                fullName: "Tel Aviv Stock Exchange",
+                symbol: "TASE",
+                region: "europe",
+                timezone: "Asia/Jerusalem",
+                openHour: 9, openMinute: 59,
+                closeHour: 17, closeMinute: 14,
+                daysOpen: [0, 1, 2, 3, 4] // Sunday-Thursday
+            },
+            // Asia-Pacific
+            {
+                name: "TSE",
+                fullName: "Tokyo Stock Exchange",
                 symbol: "TSE",
+                region: "asia",
                 timezone: "Asia/Tokyo",
-                openHour: 0, openMinute: 0, // 9:00 AM JST in UTC
-                closeHour: 6, closeMinute: 0,  // 3:00 PM JST in UTC
-                daysOpen: [1, 2, 3, 4, 5]
+                openHour: 9, openMinute: 0,
+                closeHour: 15, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5],
+                lunchBreak: { start: { hour: 11, minute: 30 }, end: { hour: 12, minute: 30 } }
             },
             {
-                name: "Hong Kong Stock Exchange",
+                name: "HKEX",
+                fullName: "Hong Kong Stock Exchange",
                 symbol: "HKEX",
+                region: "asia",
                 timezone: "Asia/Hong_Kong",
-                openHour: 1, openMinute: 30,
-                closeHour: 8, closeMinute: 0,
+                openHour: 9, openMinute: 30,
+                closeHour: 16, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5],
+                lunchBreak: { start: { hour: 12, minute: 0 }, end: { hour: 13, minute: 0 } }
+            },
+            {
+                name: "SSE",
+                fullName: "Shanghai Stock Exchange",
+                symbol: "SSE",
+                region: "asia",
+                timezone: "Asia/Shanghai",
+                openHour: 9, openMinute: 30,
+                closeHour: 15, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5],
+                lunchBreak: { start: { hour: 11, minute: 30 }, end: { hour: 13, minute: 0 } }
+            },
+            {
+                name: "SGX",
+                fullName: "Singapore Exchange",
+                symbol: "SGX",
+                region: "asia",
+                timezone: "Asia/Singapore",
+                openHour: 9, openMinute: 0,
+                closeHour: 17, closeMinute: 0,
                 daysOpen: [1, 2, 3, 4, 5]
             },
             {
-                name: "Shanghai Stock Exchange",
-                symbol: "SSE",
-                timezone: "Asia/Shanghai",
-                openHour: 1, openMinute: 30,
-                closeHour: 7, closeMinute: 0,
+                name: "BSE",
+                fullName: "Bombay Stock Exchange",
+                symbol: "BSE",
+                region: "asia",
+                timezone: "Asia/Kolkata",
+                openHour: 9, openMinute: 15,
+                closeHour: 15, closeMinute: 30,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "KRX",
+                fullName: "Korea Exchange",
+                symbol: "KRX",
+                region: "asia",
+                timezone: "Asia/Seoul",
+                openHour: 9, openMinute: 0,
+                closeHour: 15, closeMinute: 30,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "ASX",
+                fullName: "Australian Securities Exchange",
+                symbol: "ASX",
+                region: "asia",
+                timezone: "Australia/Sydney",
+                openHour: 10, openMinute: 0,
+                closeHour: 16, closeMinute: 0,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            {
+                name: "TWSE",
+                fullName: "Taiwan Stock Exchange",
+                symbol: "TWSE",
+                region: "asia",
+                timezone: "Asia/Taipei",
+                openHour: 9, openMinute: 0,
+                closeHour: 13, closeMinute: 30,
+                daysOpen: [1, 2, 3, 4, 5]
+            },
+            // Middle East & Africa
+            {
+                name: "TADAWUL",
+                fullName: "Saudi Stock Exchange",
+                symbol: "TADAWUL",
+                region: "europe",
+                timezone: "Asia/Riyadh",
+                openHour: 10, openMinute: 0,
+                closeHour: 15, closeMinute: 0,
+                daysOpen: [0, 1, 2, 3, 4] // Sunday-Thursday
+            },
+            {
+                name: "JSE",
+                fullName: "Johannesburg Stock Exchange",
+                symbol: "JSE",
+                region: "europe",
+                timezone: "Africa/Johannesburg",
+                openHour: 9, openMinute: 0,
+                closeHour: 17, closeMinute: 0,
                 daysOpen: [1, 2, 3, 4, 5]
             }
         ];
@@ -250,6 +1477,7 @@
         let cityLon = -74.0060;
         let timeUpdateInterval = null;
         let marketUpdateInterval = null;
+        let currentFilter = 'all';
 
         // Calculate moon phase
         function getMoonPhase(date) {
@@ -257,35 +1485,30 @@
             let month = date.getMonth() + 1;
             const day = date.getDate();
 
-            let c = 0, e = 0, jd = 0, b = 0;
-
             if (month < 3) {
                 year--;
                 month += 12;
             }
 
             ++month;
-            c = 365.25 * year;
-            e = 30.6 * month;
-            jd = c + e + day - 694039.09;
+            const c = 365.25 * year;
+            const e = 30.6 * month;
+            let jd = c + e + day - 694039.09;
             jd /= 29.5305882;
-            b = parseInt(jd);
-            jd -= b;
-            b = Math.round(jd * 8);
+            const b_floor = Math.floor(jd);
+            jd -= b_floor;
+            let b = Math.round(jd * 8);
 
             if (b >= 8) b = 0;
 
             const phases = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
-            const phaseNames = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 
+            const phaseNames = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous',
                                'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'];
 
-            // Calculate approximate illumination based on phase
             let illumination;
             if (b <= 4) {
-                // Waxing phases (0-4): illumination increases from 0% to 100%
                 illumination = Math.round((b / 4) * 100);
             } else {
-                // Waning phases (5-7): illumination decreases from 100% to 0%
                 illumination = Math.round(((8 - b) / 4) * 100);
             }
 
@@ -296,127 +1519,325 @@
             };
         }
 
-        // Get time until market opens/closes
+        // Check if date is a holiday for the market
+        function isMarketHoliday(market, date) {
+            const holidays = marketHolidays[market.symbol];
+            if (!holidays) return false;
+
+            const dateStr = date.toISOString().split('T')[0];
+            return holidays.includes(dateStr);
+        }
+
+        // Get the next holiday for a market
+        function getNextHoliday(market) {
+            const holidays = marketHolidays[market.symbol];
+            if (!holidays) return null;
+
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+
+            for (const holiday of holidays.sort()) {
+                if (holiday >= todayStr) {
+                    return holiday;
+                }
+            }
+            return null;
+        }
+
+        // Get market status with proper local timezone handling
         function getMarketStatus(market) {
             const now = new Date();
-            const utcHours = now.getUTCHours();
-            const utcMinutes = now.getUTCMinutes();
-            const utcDay = now.getUTCDay();
 
-            // Check if it's a trading day
-            if (!market.daysOpen.includes(utcDay)) {
-                const daysUntilOpen = market.daysOpen.map(d => {
-                    let diff = d - utcDay;
-                    if (diff <= 0) diff += 7;
-                    return diff;
-                }).sort()[0];
+            // Get current time in the market's timezone
+            const options = { timeZone: market.timezone, hour12: false };
+            const marketTimeStr = now.toLocaleString('en-US', {
+                ...options,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            // Parse the market's local time
+            const parts = marketTimeStr.match(/(\d+)\/(\d+)\/(\d+),?\s*(\d+):(\d+):(\d+)/);
+            if (!parts) {
+                return { isOpen: false, message: 'Unable to determine status', minutesUntil: 0 };
+            }
+
+            const [, month, day, year, hours, minutes] = parts.map(Number);
+            const marketDate = new Date(year, month - 1, day);
+            const marketDay = marketDate.getDay();
+            const currentMinutes = hours * 60 + minutes;
+
+            // Check if it's a holiday
+            const todayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const holidays = marketHolidays[market.symbol] || [];
+            if (holidays.includes(todayStr)) {
                 return {
                     isOpen: false,
-                    message: `Closed - Opens in ${daysUntilOpen} day${daysUntilOpen > 1 ? 's' : ''}`,
+                    isHoliday: true,
+                    message: 'Holiday - Market Closed',
+                    minutesUntil: 0
+                };
+            }
+
+            // Check if it's a trading day
+            if (!market.daysOpen.includes(marketDay)) {
+                const daysUntilOpen = market.daysOpen.map(d => {
+                    let diff = d - marketDay;
+                    if (diff <= 0) diff += 7;
+                    return diff;
+                }).sort((a, b) => a - b)[0];
+
+                return {
+                    isOpen: false,
+                    message: `Weekend - Opens in ${daysUntilOpen} day${daysUntilOpen > 1 ? 's' : ''}`,
                     minutesUntil: daysUntilOpen * 24 * 60
                 };
             }
 
-            const currentMinutes = utcHours * 60 + utcMinutes;
             const openMinutes = market.openHour * 60 + market.openMinute;
             const closeMinutes = market.closeHour * 60 + market.closeMinute;
 
+            // Check lunch break if applicable
+            if (market.lunchBreak) {
+                const lunchStart = market.lunchBreak.start.hour * 60 + market.lunchBreak.start.minute;
+                const lunchEnd = market.lunchBreak.end.hour * 60 + market.lunchBreak.end.minute;
+
+                if (currentMinutes >= lunchStart && currentMinutes < lunchEnd) {
+                    const minutesUntilResume = lunchEnd - currentMinutes;
+                    const hours_left = Math.floor(minutesUntilResume / 60);
+                    const mins_left = minutesUntilResume % 60;
+                    return {
+                        isOpen: false,
+                        isLunchBreak: true,
+                        message: `Lunch Break - Resumes in ${hours_left > 0 ? hours_left + 'h ' : ''}${mins_left}m`,
+                        minutesUntil: minutesUntilResume
+                    };
+                }
+            }
+
             if (currentMinutes >= openMinutes && currentMinutes < closeMinutes) {
+                // Check if in lunch break
+                if (market.lunchBreak) {
+                    const lunchStart = market.lunchBreak.start.hour * 60 + market.lunchBreak.start.minute;
+                    if (currentMinutes < lunchStart) {
+                        const minutesUntilLunch = lunchStart - currentMinutes;
+                        if (minutesUntilLunch <= 30) {
+                            const hours_val = Math.floor(minutesUntilLunch / 60);
+                            const minutes_val = minutesUntilLunch % 60;
+                            return {
+                                isOpen: true,
+                                message: `OPEN - Lunch in ${hours_val > 0 ? hours_val + 'h ' : ''}${minutes_val}m`,
+                                minutesUntil: minutesUntilLunch
+                            };
+                        }
+                    }
+                }
+
                 const minutesUntilClose = closeMinutes - currentMinutes;
-                const hours = Math.floor(minutesUntilClose / 60);
-                const minutes = minutesUntilClose % 60;
+                const hours_val = Math.floor(minutesUntilClose / 60);
+                const minutes_val = minutesUntilClose % 60;
                 return {
                     isOpen: true,
-                    message: `OPEN - Closes in ${hours}h ${minutes}m`,
+                    message: `OPEN - Closes in ${hours_val}h ${minutes_val}m`,
                     minutesUntil: minutesUntilClose
                 };
             } else if (currentMinutes < openMinutes) {
                 const minutesUntilOpen = openMinutes - currentMinutes;
-                const hours = Math.floor(minutesUntilOpen / 60);
-                const minutes = minutesUntilOpen % 60;
+                const hours_val = Math.floor(minutesUntilOpen / 60);
+                const minutes_val = minutesUntilOpen % 60;
                 return {
                     isOpen: false,
-                    message: `Closed - Opens in ${hours}h ${minutes}m`,
+                    message: `Closed - Opens in ${hours_val}h ${minutes_val}m`,
                     minutesUntil: minutesUntilOpen
                 };
             } else {
                 // After close, calculate until next day's open
-                const minutesUntilOpen = (24 * 60 - currentMinutes) + openMinutes;
-                const hours = Math.floor(minutesUntilOpen / 60);
-                const minutes = minutesUntilOpen % 60;
-                return {
-                    isOpen: false,
-                    message: `Closed - Opens in ${hours}h ${minutes}m`,
-                    minutesUntil: minutesUntilOpen
-                };
+                // First, check if tomorrow is a trading day
+                let daysToAdd = 1;
+                let nextDay = (marketDay + 1) % 7;
+
+                while (!market.daysOpen.includes(nextDay) && daysToAdd < 7) {
+                    daysToAdd++;
+                    nextDay = (nextDay + 1) % 7;
+                }
+
+                const minutesUntilOpen = (24 * 60 - currentMinutes) + openMinutes + ((daysToAdd - 1) * 24 * 60);
+
+                if (daysToAdd === 1) {
+                    const hours_val = Math.floor(minutesUntilOpen / 60);
+                    const minutes_val = minutesUntilOpen % 60;
+                    return {
+                        isOpen: false,
+                        message: `Closed - Opens in ${hours_val}h ${minutes_val}m`,
+                        minutesUntil: minutesUntilOpen
+                    };
+                } else {
+                    return {
+                        isOpen: false,
+                        message: `Closed - Opens in ${daysToAdd} day${daysToAdd > 1 ? 's' : ''}`,
+                        minutesUntil: minutesUntilOpen
+                    };
+                }
             }
+        }
+
+        // Filter markets by region
+        function filterMarkets(region) {
+            currentFilter = region;
+
+            // Update filter button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.region === region);
+            });
+
+            updateMarkets();
         }
 
         // Update markets display
         function updateMarkets() {
             const grid = document.getElementById('marketsGrid');
-            grid.innerHTML = markets.map(market => {
+            const filteredMarkets = currentFilter === 'all'
+                ? markets
+                : markets.filter(m => m.region === currentFilter);
+
+            grid.innerHTML = filteredMarkets.map(market => {
                 const status = getMarketStatus(market);
-                const localTime = new Date().toLocaleTimeString('en-US', { 
+                const localTime = new Date().toLocaleTimeString('en-US', {
                     timeZone: market.timezone,
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: true
                 });
-                
+
+                const cardClass = status.isOpen ? 'open' : (status.isHoliday ? 'holiday' : '');
+                const statusIcon = status.isOpen ? '✅' : (status.isHoliday ? '🎉' : (status.isLunchBreak ? '🍽️' : '🔴'));
+
                 return `
-                    <div class="market-card ${status.isOpen ? 'open' : ''}">
-                        <h3>${market.name}</h3>
-                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 5px;">
-                            Local Time: ${localTime}
+                    <article class="market-card ${cardClass}" role="listitem" aria-label="${market.fullName} market status">
+                        <h3>
+                            ${market.name}
+                            <span class="market-region">${getRegionLabel(market.region)}</span>
+                        </h3>
+                        <div class="market-time">
+                            <span aria-label="Local time in ${market.timezone}">${localTime}</span> local
                         </div>
                         <div class="market-status">
-                            ${status.isOpen ? '✅' : '🔴'} ${status.message}
+                            <span aria-hidden="true">${statusIcon}</span>
+                            <span>${status.message}</span>
                         </div>
-                        <div style="font-size: 0.85em; opacity: 0.9;">
-                            Trading Hours: ${formatMarketHours(market)}
+                        <div class="market-hours">
+                            <span aria-label="Trading hours">📅</span>
+                            ${formatMarketHours(market)}
                         </div>
-                    </div>
+                        ${market.lunchBreak ? `<div class="market-note">Lunch break: ${formatTime(market.lunchBreak.start.hour, market.lunchBreak.start.minute)} - ${formatTime(market.lunchBreak.end.hour, market.lunchBreak.end.minute)}</div>` : ''}
+                    </article>
                 `;
             }).join('');
         }
 
+        function getRegionLabel(region) {
+            const labels = {
+                americas: 'Americas',
+                europe: 'EMEA',
+                asia: 'Asia-Pac'
+            };
+            return labels[region] || region;
+        }
+
+        function formatTime(hour, minute) {
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour);
+            return `${displayHour}:${String(minute).padStart(2, '0')} ${period}`;
+        }
+
         function formatMarketHours(market) {
-            const open = new Date();
-            open.setUTCHours(market.openHour, market.openMinute, 0);
-            const close = new Date();
-            close.setUTCHours(market.closeHour, market.closeMinute, 0);
-            
-            const openTime = open.toLocaleTimeString('en-US', { 
-                timeZone: market.timezone,
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
+            return `${formatTime(market.openHour, market.openMinute)} - ${formatTime(market.closeHour, market.closeMinute)}`;
+        }
+
+        // Sanitize user input
+        function sanitizeInput(input) {
+            if (!input) return '';
+            return String(input).replace(/[<>'"&]/g, char => {
+                const entities = { '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;', '&': '&amp;' };
+                return entities[char];
             });
-            const closeTime = close.toLocaleTimeString('en-US', { 
-                timeZone: market.timezone,
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-            });
-            
-            return `${openTime} - ${closeTime}`;
+        }
+
+        // Format location name, handling undefined/null values
+        function formatLocationName(name, country) {
+            // Handle undefined, null, empty, or literal "undefined" string
+            const cleanName = (name && name !== 'undefined' && name !== 'null') ? String(name).trim() : '';
+            const cleanCountry = (country && country !== 'undefined' && country !== 'null') ? String(country).trim() : '';
+
+            // If name is empty, return empty string
+            if (!cleanName) return '';
+
+            // If country is empty or same as name, return just the name
+            if (!cleanCountry || cleanCountry.toLowerCase() === cleanName.toLowerCase()) {
+                return cleanName;
+            }
+
+            return `${cleanName}, ${cleanCountry}`;
+        }
+
+        // Check if input is a country and return capital data
+        function checkCountry(input) {
+            const normalized = input.toLowerCase().trim();
+            return countryData[normalized] || null;
+        }
+
+        // Show city suggestions
+        function showSuggestions(countryInfo, countryName) {
+            const suggestionsEl = document.getElementById('suggestions');
+
+            if (!countryInfo.alternatives || countryInfo.alternatives.length === 0) {
+                suggestionsEl.classList.remove('visible');
+                return;
+            }
+
+            const capitalName = countryInfo.capital;
+            suggestionsEl.innerHTML = `
+                <div class="suggestions-title">
+                    Showing ${sanitizeInput(capitalName)} (capital). Did you mean another city in ${sanitizeInput(countryName)}?
+                </div>
+                <div class="suggestion-chips">
+                    ${countryInfo.alternatives.map(city =>
+                        `<button class="suggestion-chip" onclick="selectCity('${sanitizeInput(city)}')" aria-label="Select ${city}">${sanitizeInput(city)}</button>`
+                    ).join('')}
+                </div>
+            `;
+            suggestionsEl.classList.add('visible');
+        }
+
+        // Select a suggested city
+        function selectCity(cityName) {
+            document.getElementById('cityInput').value = cityName;
+            document.getElementById('suggestions').classList.remove('visible');
+            updateCity();
         }
 
         // Geocode city name to coordinates
         async function geocodeCity(cityName) {
             const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`;
-            
+
             try {
                 const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
                 const data = await response.json();
-                
+
                 if (data.results && data.results.length > 0) {
                     return {
                         lat: data.results[0].latitude,
                         lon: data.results[0].longitude,
                         name: data.results[0].name,
-                        country: data.results[0].country
+                        country: data.results[0].country,
+                        timezone: data.results[0].timezone
                     };
                 }
                 throw new Error('City not found');
@@ -425,12 +1846,15 @@
             }
         }
 
-        // Get weather data using Open-Meteo API (free, no API key required)
+        // Get weather data using Open-Meteo API
         async function getWeatherData(lat, lon) {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m&timezone=auto`;
-            
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,cloud_cover,wind_speed_10m,weather_code&timezone=auto`;
+
             try {
                 const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
                 const data = await response.json();
                 return data;
             } catch (error) {
@@ -438,30 +1862,71 @@
             }
         }
 
+        // Get weather description from code
+        function getWeatherDescription(code) {
+            const weatherCodes = {
+                0: 'Clear sky',
+                1: 'Mainly clear',
+                2: 'Partly cloudy',
+                3: 'Overcast',
+                45: 'Foggy',
+                48: 'Depositing rime fog',
+                51: 'Light drizzle',
+                53: 'Moderate drizzle',
+                55: 'Dense drizzle',
+                61: 'Slight rain',
+                63: 'Moderate rain',
+                65: 'Heavy rain',
+                71: 'Slight snow',
+                73: 'Moderate snow',
+                75: 'Heavy snow',
+                80: 'Slight rain showers',
+                81: 'Moderate rain showers',
+                82: 'Violent rain showers',
+                95: 'Thunderstorm',
+                96: 'Thunderstorm with slight hail',
+                99: 'Thunderstorm with heavy hail'
+            };
+            return weatherCodes[code] || 'Unknown';
+        }
+
         // Update city display
         async function updateCity() {
             const cityInput = document.getElementById('cityInput');
-            const cityName = cityInput.value.trim();
-            
+            const trackBtn = document.getElementById('trackBtn');
+            let cityName = cityInput.value.trim();
+
             if (!cityName) {
-                showError('Please enter a city name');
+                showError('Please enter a city or country name');
                 return;
             }
 
             const loading = document.getElementById('loading');
             const errorMsg = document.getElementById('errorMsg');
             const cityInfo = document.getElementById('cityInfo');
+            const suggestionsEl = document.getElementById('suggestions');
 
             loading.style.display = 'block';
             errorMsg.style.display = 'none';
             cityInfo.innerHTML = '';
+            suggestionsEl.classList.remove('visible');
+            trackBtn.disabled = true;
 
             try {
+                // Check if input is a country
+                const countryInfo = checkCountry(cityName);
+                let searchCity = cityName;
+
+                if (countryInfo) {
+                    searchCity = countryInfo.capital;
+                    // We'll show suggestions after successful load
+                }
+
                 // Geocode the city
-                const location = await geocodeCity(cityName);
+                const location = await geocodeCity(searchCity);
                 cityLat = location.lat;
                 cityLon = location.lon;
-                currentCity = `${location.name}, ${location.country}`;
+                currentCity = formatLocationName(location.name, location.country);
 
                 // Get weather data
                 const weather = await getWeatherData(cityLat, cityLon);
@@ -471,19 +1936,25 @@
 
                 // Display all information
                 displayCityInfo(location, weather, moonPhase);
-                
+
+                // Show suggestions if user entered a country
+                if (countryInfo) {
+                    showSuggestions(countryInfo, cityName);
+                }
+
                 loading.style.display = 'none';
             } catch (error) {
                 loading.style.display = 'none';
-                showError(error.message);
+                showError(error.message || 'An error occurred. Please try again.');
+            } finally {
+                trackBtn.disabled = false;
             }
         }
 
         function displayCityInfo(location, weather, moonPhase) {
             const cityInfo = document.getElementById('cityInfo');
             const now = new Date();
-            
-            // Get local time for the city using timezone from API
+
             const localTime = now.toLocaleString('en-US', {
                 timeZone: weather.timezone,
                 hour: '2-digit',
@@ -503,40 +1974,39 @@
             const cloudCover = weather.current.cloud_cover;
             const temperature = Math.round(weather.current.temperature_2m);
             const humidity = weather.current.relative_humidity_2m;
-            const windSpeed = weather.current.wind_speed_10m;
+            const windSpeed = Math.round(weather.current.wind_speed_10m);
+            const weatherDesc = getWeatherDescription(weather.current.weather_code);
 
             cityInfo.innerHTML = `
-                <div class="info-box">
-                    <h3>🕐 Local Time</h3>
-                    <div class="value" id="localTime">${localTime}</div>
+                <article class="info-box fade-in" aria-label="Local time information">
+                    <h3>Local Time</h3>
+                    <div class="value" id="localTime" aria-live="polite">${localTime}</div>
                     <div class="detail">${localDate}</div>
-                    <div class="detail">${currentCity}</div>
-                </div>
-                <div class="info-box">
-                    <h3>☁️ Cloud Cover</h3>
-                    <div class="value">${cloudCover}%</div>
-                    <div class="detail">Temperature: ${temperature}°C</div>
-                    <div class="detail">Humidity: ${humidity}%</div>
-                    <div class="detail">Wind: ${windSpeed} km/h</div>
-                </div>
-                <div class="info-box">
-                    <h3>🌙 Moon Phase</h3>
-                    <div class="moon-display">${moonPhase.emoji}</div>
+                    <div class="detail">${sanitizeInput(currentCity)}</div>
+                </article>
+                <article class="info-box fade-in" aria-label="Weather information" style="animation-delay: 0.1s">
+                    <h3>Weather</h3>
+                    <div class="value">${temperature}°C</div>
+                    <div class="detail">${weatherDesc}</div>
+                    <div class="detail">Humidity: ${humidity}% | Wind: ${windSpeed} km/h</div>
+                    <div class="detail">Cloud Cover: ${cloudCover}%</div>
+                </article>
+                <article class="info-box fade-in" aria-label="Moon phase information" style="animation-delay: 0.2s">
+                    <h3>Moon Phase</h3>
+                    <div class="moon-display" aria-label="${moonPhase.name}">${moonPhase.emoji}</div>
                     <div class="detail">${moonPhase.name}</div>
                     <div class="detail">Illumination: ${moonPhase.illumination}%</div>
-                </div>
+                </article>
             `;
 
-            // Update time every second
             updateLocalTime(weather.timezone);
         }
 
         function updateLocalTime(timezone) {
-            // Clear any existing interval to prevent memory leaks
             if (timeUpdateInterval) {
                 clearInterval(timeUpdateInterval);
             }
-            
+
             timeUpdateInterval = setInterval(() => {
                 const timeElement = document.getElementById('localTime');
                 if (timeElement) {
@@ -560,23 +2030,55 @@
         }
 
         // Initialize on page load
-        window.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             updateCity();
             updateMarkets();
-            
-            // Update markets every minute
+
             marketUpdateInterval = setInterval(updateMarkets, 60000);
-            
-            // Clean up intervals on page unload
+
             window.addEventListener('beforeunload', () => {
                 if (timeUpdateInterval) clearInterval(timeUpdateInterval);
                 if (marketUpdateInterval) clearInterval(marketUpdateInterval);
             });
 
-            // Allow Enter key to update city
-            document.getElementById('cityInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    updateCity();
+            const cityInput = document.getElementById('cityInput');
+
+            // Autocomplete input handler with debounce
+            cityInput.addEventListener('input', (e) => {
+                clearTimeout(autocompleteDebounceTimer);
+                autocompleteDebounceTimer = setTimeout(() => {
+                    const query = e.target.value.trim();
+                    const results = searchCities(query);
+                    autocompleteSelectedIndex = -1;
+                    renderAutocomplete(results);
+                }, 150);
+            });
+
+            // Keyboard navigation for autocomplete
+            cityInput.addEventListener('keydown', handleAutocompleteKeydown);
+
+            // Close autocomplete on blur (with delay for click handling)
+            cityInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    document.getElementById('autocomplete-list').classList.remove('visible');
+                }, 200);
+            });
+
+            // Add focus management for accessibility
+            cityInput.addEventListener('focus', () => {
+                document.getElementById('suggestions').classList.remove('visible');
+                // Show autocomplete if there's text
+                const query = cityInput.value.trim();
+                if (query.length >= 2) {
+                    const results = searchCities(query);
+                    renderAutocomplete(results);
+                }
+            });
+
+            // Close autocomplete when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.autocomplete-container')) {
+                    document.getElementById('autocomplete-list').classList.remove('visible');
                 }
             });
         });

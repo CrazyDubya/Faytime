@@ -1,125 +1,319 @@
 {
-  "_comment": "This JSON file serves as a reference database for popular cities and market information. It can be loaded dynamically via JavaScript fetch() API if needed. Currently, the data is embedded in index.html for simplicity.",
+  "_comment": "This JSON file serves as a reference database for popular cities and market information. The data is now embedded in index.html for performance, but this file remains as documentation.",
+  "version": "2.0.0",
+  "lastUpdated": "2024-12-12",
   "popularCities": [
     {
       "name": "New York",
       "country": "United States",
       "timezone": "America/New_York",
       "lat": 40.7128,
-      "lon": -74.0060
+      "lon": -74.0060,
+      "localNames": ["Nueva York", "Нью-Йорк", "ニューヨーク", "纽约"]
     },
     {
       "name": "London",
       "country": "United Kingdom",
       "timezone": "Europe/London",
       "lat": 51.5074,
-      "lon": -0.1278
+      "lon": -0.1278,
+      "localNames": ["Londres", "Londra", "ロンドン", "伦敦", "Лондон"]
     },
     {
       "name": "Tokyo",
       "country": "Japan",
       "timezone": "Asia/Tokyo",
       "lat": 35.6762,
-      "lon": 139.6503
+      "lon": 139.6503,
+      "localNames": ["東京", "Токио", "Tóquio", "Tokio"]
     },
     {
       "name": "Sydney",
       "country": "Australia",
       "timezone": "Australia/Sydney",
       "lat": -33.8688,
-      "lon": 151.2093
+      "lon": 151.2093,
+      "localNames": ["Sídney", "Сидней", "シドニー"]
     },
     {
       "name": "Dubai",
       "country": "United Arab Emirates",
       "timezone": "Asia/Dubai",
       "lat": 25.2048,
-      "lon": 55.2708
+      "lon": 55.2708,
+      "localNames": ["دبي", "Dubái", "Дубай"]
     },
     {
       "name": "Paris",
       "country": "France",
       "timezone": "Europe/Paris",
       "lat": 48.8566,
-      "lon": 2.3522
+      "lon": 2.3522,
+      "localNames": ["Parigi", "パリ", "巴黎", "Париж"]
     },
     {
       "name": "Hong Kong",
       "country": "China",
       "timezone": "Asia/Hong_Kong",
       "lat": 22.3193,
-      "lon": 114.1694
+      "lon": 114.1694,
+      "localNames": ["香港", "HK"]
     },
     {
       "name": "Singapore",
       "country": "Singapore",
       "timezone": "Asia/Singapore",
       "lat": 1.3521,
-      "lon": 103.8198
+      "lon": 103.8198,
+      "localNames": ["新加坡", "Singapura", "Singapur", "Сингапур"]
     },
     {
       "name": "Mumbai",
       "country": "India",
       "timezone": "Asia/Kolkata",
       "lat": 19.0760,
-      "lon": 72.8777
+      "lon": 72.8777,
+      "localNames": ["मुंबई", "Bombay", "Bombaim", "ムンバイ"]
     },
     {
       "name": "São Paulo",
       "country": "Brazil",
       "timezone": "America/Sao_Paulo",
       "lat": -23.5505,
-      "lon": -46.6333
+      "lon": -46.6333,
+      "localNames": ["San Pablo", "サンパウロ"]
     }
   ],
   "markets": [
     {
-      "name": "NYSE (New York Stock Exchange)",
+      "name": "NYSE",
+      "fullName": "New York Stock Exchange",
       "symbol": "NYSE",
       "country": "United States",
+      "region": "americas",
       "timezone": "America/New_York",
-      "tradingHours": "9:30 AM - 4:00 PM EST",
-      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      "tradingHours": { "open": "9:30 AM", "close": "4:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
     },
     {
       "name": "NASDAQ",
+      "fullName": "NASDAQ Stock Market",
       "symbol": "NASDAQ",
       "country": "United States",
+      "region": "americas",
       "timezone": "America/New_York",
-      "tradingHours": "9:30 AM - 4:00 PM EST",
-      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      "tradingHours": { "open": "9:30 AM", "close": "4:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
     },
     {
-      "name": "London Stock Exchange",
+      "name": "TSX",
+      "fullName": "Toronto Stock Exchange",
+      "symbol": "TSX",
+      "country": "Canada",
+      "region": "americas",
+      "timezone": "America/Toronto",
+      "tradingHours": { "open": "9:30 AM", "close": "4:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "BMV",
+      "fullName": "Mexican Stock Exchange",
+      "symbol": "BMV",
+      "country": "Mexico",
+      "region": "americas",
+      "timezone": "America/Mexico_City",
+      "tradingHours": { "open": "8:30 AM", "close": "3:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "B3",
+      "fullName": "B3 - Brasil Bolsa Balcao",
+      "symbol": "B3",
+      "country": "Brazil",
+      "region": "americas",
+      "timezone": "America/Sao_Paulo",
+      "tradingHours": { "open": "10:00 AM", "close": "5:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "LSE",
+      "fullName": "London Stock Exchange",
       "symbol": "LSE",
       "country": "United Kingdom",
+      "region": "europe",
       "timezone": "Europe/London",
-      "tradingHours": "8:00 AM - 4:30 PM GMT",
-      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      "tradingHours": { "open": "8:00 AM", "close": "4:30 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
     },
     {
-      "name": "Tokyo Stock Exchange",
+      "name": "XETRA",
+      "fullName": "Frankfurt Stock Exchange",
+      "symbol": "XETRA",
+      "country": "Germany",
+      "region": "europe",
+      "timezone": "Europe/Berlin",
+      "tradingHours": { "open": "9:00 AM", "close": "5:30 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "EURONEXT",
+      "fullName": "Euronext Paris",
+      "symbol": "EURONEXT",
+      "country": "France",
+      "region": "europe",
+      "timezone": "Europe/Paris",
+      "tradingHours": { "open": "9:00 AM", "close": "5:30 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "SIX",
+      "fullName": "SIX Swiss Exchange",
+      "symbol": "SIX",
+      "country": "Switzerland",
+      "region": "europe",
+      "timezone": "Europe/Zurich",
+      "tradingHours": { "open": "9:00 AM", "close": "5:30 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "TASE",
+      "fullName": "Tel Aviv Stock Exchange",
+      "symbol": "TASE",
+      "country": "Israel",
+      "region": "europe",
+      "timezone": "Asia/Jerusalem",
+      "tradingHours": { "open": "9:59 AM", "close": "5:14 PM" },
+      "tradingDays": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "TSE",
+      "fullName": "Tokyo Stock Exchange",
       "symbol": "TSE",
       "country": "Japan",
+      "region": "asia",
       "timezone": "Asia/Tokyo",
-      "tradingHours": "9:00 AM - 3:00 PM JST",
-      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      "tradingHours": { "open": "9:00 AM", "close": "3:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": { "start": "11:30 AM", "end": "12:30 PM" }
     },
     {
-      "name": "Hong Kong Stock Exchange",
+      "name": "HKEX",
+      "fullName": "Hong Kong Stock Exchange",
       "symbol": "HKEX",
       "country": "China",
+      "region": "asia",
       "timezone": "Asia/Hong_Kong",
-      "tradingHours": "9:30 AM - 4:00 PM HKT",
-      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      "tradingHours": { "open": "9:30 AM", "close": "4:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": { "start": "12:00 PM", "end": "1:00 PM" }
     },
     {
-      "name": "Shanghai Stock Exchange",
+      "name": "SSE",
+      "fullName": "Shanghai Stock Exchange",
       "symbol": "SSE",
       "country": "China",
+      "region": "asia",
       "timezone": "Asia/Shanghai",
-      "tradingHours": "9:30 AM - 3:00 PM CST",
-      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      "tradingHours": { "open": "9:30 AM", "close": "3:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": { "start": "11:30 AM", "end": "1:00 PM" }
+    },
+    {
+      "name": "SGX",
+      "fullName": "Singapore Exchange",
+      "symbol": "SGX",
+      "country": "Singapore",
+      "region": "asia",
+      "timezone": "Asia/Singapore",
+      "tradingHours": { "open": "9:00 AM", "close": "5:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "BSE",
+      "fullName": "Bombay Stock Exchange",
+      "symbol": "BSE",
+      "country": "India",
+      "region": "asia",
+      "timezone": "Asia/Kolkata",
+      "tradingHours": { "open": "9:15 AM", "close": "3:30 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "KRX",
+      "fullName": "Korea Exchange",
+      "symbol": "KRX",
+      "country": "South Korea",
+      "region": "asia",
+      "timezone": "Asia/Seoul",
+      "tradingHours": { "open": "9:00 AM", "close": "3:30 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "ASX",
+      "fullName": "Australian Securities Exchange",
+      "symbol": "ASX",
+      "country": "Australia",
+      "region": "asia",
+      "timezone": "Australia/Sydney",
+      "tradingHours": { "open": "10:00 AM", "close": "4:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "TWSE",
+      "fullName": "Taiwan Stock Exchange",
+      "symbol": "TWSE",
+      "country": "Taiwan",
+      "region": "asia",
+      "timezone": "Asia/Taipei",
+      "tradingHours": { "open": "9:00 AM", "close": "1:30 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "TADAWUL",
+      "fullName": "Saudi Stock Exchange",
+      "symbol": "TADAWUL",
+      "country": "Saudi Arabia",
+      "region": "europe",
+      "timezone": "Asia/Riyadh",
+      "tradingHours": { "open": "10:00 AM", "close": "3:00 PM" },
+      "tradingDays": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+      "lunchBreak": null
+    },
+    {
+      "name": "JSE",
+      "fullName": "Johannesburg Stock Exchange",
+      "symbol": "JSE",
+      "country": "South Africa",
+      "region": "europe",
+      "timezone": "Africa/Johannesburg",
+      "tradingHours": { "open": "9:00 AM", "close": "5:00 PM" },
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "lunchBreak": null
     }
-  ]
+  ],
+  "features": {
+    "holidaySupport": true,
+    "weekendDetection": true,
+    "lunchBreakTracking": true,
+    "localTimezoneDisplay": true,
+    "autocomplete": true,
+    "fuzzySearch": true,
+    "multiLanguageSupport": true,
+    "typoCorrection": true
+  }
 }
