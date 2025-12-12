@@ -192,6 +192,8 @@
 
     <script>
         // Market data with trading hours (in UTC)
+        // Note: Hours are approximate and don't account for DST transitions
+        // For production use, consider using a timezone library like moment-timezone
         const markets = [
             {
                 name: "NYSE (New York Stock Exchange)",
@@ -247,6 +249,7 @@
         let cityLat = 40.7128;
         let cityLon = -74.0060;
         let timeUpdateInterval = null;
+        let marketUpdateInterval = null;
 
         // Calculate moon phase
         function getMoonPhase(date) {
@@ -276,10 +279,20 @@
             const phaseNames = ['New Moon', 'Waxing Crescent', 'First Quarter', 'Waxing Gibbous', 
                                'Full Moon', 'Waning Gibbous', 'Last Quarter', 'Waning Crescent'];
 
+            // Calculate approximate illumination based on phase
+            let illumination;
+            if (b <= 4) {
+                // Waxing phases (0-4): illumination increases from 0% to 100%
+                illumination = Math.round((b / 4) * 100);
+            } else {
+                // Waning phases (5-7): illumination decreases from 100% to 0%
+                illumination = Math.round(((8 - b) / 4) * 100);
+            }
+
             return {
                 emoji: phases[b],
                 name: phaseNames[b],
-                illumination: Math.round(jd * 100)
+                illumination: illumination
             };
         }
 
@@ -552,7 +565,13 @@
             updateMarkets();
             
             // Update markets every minute
-            setInterval(updateMarkets, 60000);
+            marketUpdateInterval = setInterval(updateMarkets, 60000);
+            
+            // Clean up intervals on page unload
+            window.addEventListener('beforeunload', () => {
+                if (timeUpdateInterval) clearInterval(timeUpdateInterval);
+                if (marketUpdateInterval) clearInterval(marketUpdateInterval);
+            });
 
             // Allow Enter key to update city
             document.getElementById('cityInput').addEventListener('keypress', (e) => {
