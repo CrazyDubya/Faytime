@@ -1,0 +1,125 @@
+{
+  "_comment": "This JSON file serves as a reference database for popular cities and market information. It can be loaded dynamically via JavaScript fetch() API if needed. Currently, the data is embedded in index.html for simplicity.",
+  "popularCities": [
+    {
+      "name": "New York",
+      "country": "United States",
+      "timezone": "America/New_York",
+      "lat": 40.7128,
+      "lon": -74.0060
+    },
+    {
+      "name": "London",
+      "country": "United Kingdom",
+      "timezone": "Europe/London",
+      "lat": 51.5074,
+      "lon": -0.1278
+    },
+    {
+      "name": "Tokyo",
+      "country": "Japan",
+      "timezone": "Asia/Tokyo",
+      "lat": 35.6762,
+      "lon": 139.6503
+    },
+    {
+      "name": "Sydney",
+      "country": "Australia",
+      "timezone": "Australia/Sydney",
+      "lat": -33.8688,
+      "lon": 151.2093
+    },
+    {
+      "name": "Dubai",
+      "country": "United Arab Emirates",
+      "timezone": "Asia/Dubai",
+      "lat": 25.2048,
+      "lon": 55.2708
+    },
+    {
+      "name": "Paris",
+      "country": "France",
+      "timezone": "Europe/Paris",
+      "lat": 48.8566,
+      "lon": 2.3522
+    },
+    {
+      "name": "Hong Kong",
+      "country": "China",
+      "timezone": "Asia/Hong_Kong",
+      "lat": 22.3193,
+      "lon": 114.1694
+    },
+    {
+      "name": "Singapore",
+      "country": "Singapore",
+      "timezone": "Asia/Singapore",
+      "lat": 1.3521,
+      "lon": 103.8198
+    },
+    {
+      "name": "Mumbai",
+      "country": "India",
+      "timezone": "Asia/Kolkata",
+      "lat": 19.0760,
+      "lon": 72.8777
+    },
+    {
+      "name": "São Paulo",
+      "country": "Brazil",
+      "timezone": "America/Sao_Paulo",
+      "lat": -23.5505,
+      "lon": -46.6333
+    }
+  ],
+  "markets": [
+    {
+      "name": "NYSE (New York Stock Exchange)",
+      "symbol": "NYSE",
+      "country": "United States",
+      "timezone": "America/New_York",
+      "tradingHours": "9:30 AM - 4:00 PM EST",
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    },
+    {
+      "name": "NASDAQ",
+      "symbol": "NASDAQ",
+      "country": "United States",
+      "timezone": "America/New_York",
+      "tradingHours": "9:30 AM - 4:00 PM EST",
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    },
+    {
+      "name": "London Stock Exchange",
+      "symbol": "LSE",
+      "country": "United Kingdom",
+      "timezone": "Europe/London",
+      "tradingHours": "8:00 AM - 4:30 PM GMT",
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    },
+    {
+      "name": "Tokyo Stock Exchange",
+      "symbol": "TSE",
+      "country": "Japan",
+      "timezone": "Asia/Tokyo",
+      "tradingHours": "9:00 AM - 3:00 PM JST",
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    },
+    {
+      "name": "Hong Kong Stock Exchange",
+      "symbol": "HKEX",
+      "country": "China",
+      "timezone": "Asia/Hong_Kong",
+      "tradingHours": "9:30 AM - 4:00 PM HKT",
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    },
+    {
+      "name": "Shanghai Stock Exchange",
+      "symbol": "SSE",
+      "country": "China",
+      "timezone": "Asia/Shanghai",
+      "tradingHours": "9:30 AM - 3:00 PM CST",
+      "tradingDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    }
+  ]
+}
