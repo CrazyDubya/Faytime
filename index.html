@@ -1760,10 +1760,28 @@
 
         // Sanitize user input
         function sanitizeInput(input) {
-            return input.replace(/[<>'"&]/g, char => {
+            if (!input) return '';
+            return String(input).replace(/[<>'"&]/g, char => {
                 const entities = { '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;', '&': '&amp;' };
                 return entities[char];
             });
+        }
+
+        // Format location name, handling undefined/null values
+        function formatLocationName(name, country) {
+            // Handle undefined, null, empty, or literal "undefined" string
+            const cleanName = (name && name !== 'undefined' && name !== 'null') ? String(name).trim() : '';
+            const cleanCountry = (country && country !== 'undefined' && country !== 'null') ? String(country).trim() : '';
+
+            // If name is empty, return empty string
+            if (!cleanName) return '';
+
+            // If country is empty or same as name, return just the name
+            if (!cleanCountry || cleanCountry.toLowerCase() === cleanName.toLowerCase()) {
+                return cleanName;
+            }
+
+            return `${cleanName}, ${cleanCountry}`;
         }
 
         // Check if input is a country and return capital data
@@ -1908,7 +1926,7 @@
                 const location = await geocodeCity(searchCity);
                 cityLat = location.lat;
                 cityLon = location.lon;
-                currentCity = `${location.name}, ${location.country}`;
+                currentCity = formatLocationName(location.name, location.country);
 
                 // Get weather data
                 const weather = await getWeatherData(cityLat, cityLon);
