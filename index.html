@@ -548,6 +548,71 @@
             text-decoration: underline;
         }
 
+        /* YouTube Live Indicator */
+        .youtube-live-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .youtube-live-dot {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 10px 0;
+            box-shadow: 0 0 20px currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+        }
+
+        .youtube-live-dot.loading {
+            background: #888;
+            animation: gcpLoading 1.5s ease-in-out infinite;
+        }
+
+        .youtube-live-dot.live {
+            background: #ff0000;
+            color: #ff0000;
+            animation: livePulse 1.5s ease-in-out infinite;
+        }
+
+        .youtube-live-dot.offline {
+            background: #666;
+            color: #666;
+        }
+
+        @keyframes livePulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px #ff0000;
+            }
+            50% {
+                transform: scale(1.15);
+                box-shadow: 0 0 40px #ff0000, 0 0 60px rgba(255, 0, 0, 0.5);
+            }
+        }
+
+        .youtube-status {
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .youtube-link {
+            font-size: 0.75em;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+
+        .youtube-link a {
+            color: white;
+            text-decoration: underline;
+        }
+
         /* Temperature Toggle */
         .temp-toggle {
             display: inline-flex;
@@ -1580,6 +1645,12 @@
         let gcpData = { color: '#888888', status: 'Loading...', description: 'Connecting to GCP...' };
         let gcpUpdateInterval = null;
 
+        // YouTube Live Status (AgendaFreeTV)
+        const YOUTUBE_API_KEY = 'AIzaSyB9ZtwMcHiv3crmxYA4a3XcqHFZk0O54lI';
+        const AGENDAFREETV_CHANNEL_ID = 'UCshCsg1YVKli8yBai-wa78w';
+        let youtubeLiveData = { isLive: false, status: 'Loading...', description: 'Checking stream status...', videoId: null };
+        let youtubeLiveUpdateInterval = null;
+
         // GCP (Global Consciousness Project) functions
         // Color interpretation based on GCP probability values:
         // Gray (#CDCDCD): < 0.01 - baseline/calm
@@ -1687,6 +1758,73 @@
             }
             if (gcpDescription) {
                 gcpDescription.textContent = gcpData.description;
+            }
+        }
+
+        // YouTube Live Status functions (AgendaFreeTV)
+        async function fetchYouTubeLiveStatus() {
+            try {
+                const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${AGENDAFREETV_CHANNEL_ID}&eventType=live&type=video&key=${YOUTUBE_API_KEY}`;
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error('YouTube API fetch failed');
+                }
+
+                const data = await response.json();
+
+                if (data.items && data.items.length > 0) {
+                    const liveVideo = data.items[0];
+                    youtubeLiveData = {
+                        isLive: true,
+                        status: 'LIVE NOW',
+                        description: liveVideo.snippet.title || 'AgendaFreeTV is streaming',
+                        videoId: liveVideo.id.videoId
+                    };
+                } else {
+                    youtubeLiveData = {
+                        isLive: false,
+                        status: 'Offline',
+                        description: 'No active stream',
+                        videoId: null
+                    };
+                }
+
+                updateYouTubeLiveDisplay();
+            } catch (error) {
+                console.log('YouTube API fetch failed:', error);
+                youtubeLiveData = {
+                    isLive: false,
+                    status: 'Unavailable',
+                    description: 'Could not check stream status',
+                    videoId: null
+                };
+                updateYouTubeLiveDisplay();
+            }
+        }
+
+        function updateYouTubeLiveDisplay() {
+            const liveDot = document.getElementById('youtubeLiveDot');
+            const liveStatus = document.getElementById('youtubeLiveStatus');
+            const liveDescription = document.getElementById('youtubeLiveDescription');
+            const liveLink = document.getElementById('youtubeLiveLink');
+
+            if (liveDot) {
+                liveDot.classList.remove('loading', 'live', 'offline');
+                liveDot.classList.add(youtubeLiveData.isLive ? 'live' : 'offline');
+            }
+            if (liveStatus) {
+                liveStatus.textContent = youtubeLiveData.status;
+            }
+            if (liveDescription) {
+                liveDescription.textContent = youtubeLiveData.description;
+            }
+            if (liveLink) {
+                if (youtubeLiveData.isLive && youtubeLiveData.videoId) {
+                    liveLink.innerHTML = `<a href="https://www.youtube.com/watch?v=${youtubeLiveData.videoId}" target="_blank" rel="noopener noreferrer">Watch Live</a>`;
+                } else {
+                    liveLink.innerHTML = `<a href="https://www.youtube.com/@AgendaFreeTV" target="_blank" rel="noopener noreferrer">@AgendaFreeTV</a>`;
+                }
             }
         }
 
@@ -2238,11 +2376,22 @@
                     <div class="detail" id="gcpDescription">${gcpData.description}</div>
                     <div class="gcp-link"><a href="https://gcpdot.com" target="_blank" rel="noopener noreferrer">gcpdot.com</a></div>
                 </article>
+                <article class="info-box fade-in" aria-label="AgendaFreeTV live status" style="animation-delay: 0.4s">
+                    <h3>AgendaFreeTV</h3>
+                    <div class="youtube-live-container">
+                        <div class="youtube-live-dot loading" id="youtubeLiveDot" aria-label="AgendaFreeTV stream status indicator"></div>
+                        <div class="youtube-status" id="youtubeLiveStatus">${youtubeLiveData.status}</div>
+                    </div>
+                    <div class="detail" id="youtubeLiveDescription">${youtubeLiveData.description}</div>
+                    <div class="youtube-link" id="youtubeLiveLink"><a href="https://www.youtube.com/@AgendaFreeTV" target="_blank" rel="noopener noreferrer">@AgendaFreeTV</a></div>
+                </article>
             `;
 
             updateLocalTime(weather.timezone);
             // Fetch GCP data after rendering the widget
             fetchGCPData();
+            // Fetch YouTube live status after rendering the widget
+            fetchYouTubeLiveStatus();
         }
 
         function updateLocalTime(timezone) {
@@ -2280,11 +2429,14 @@
             marketUpdateInterval = setInterval(updateMarkets, 60000);
             // Update GCP data every 60 seconds
             gcpUpdateInterval = setInterval(fetchGCPData, 60000);
+            // Update YouTube live status every 60 seconds
+            youtubeLiveUpdateInterval = setInterval(fetchYouTubeLiveStatus, 60000);
 
             window.addEventListener('beforeunload', () => {
                 if (timeUpdateInterval) clearInterval(timeUpdateInterval);
                 if (marketUpdateInterval) clearInterval(marketUpdateInterval);
                 if (gcpUpdateInterval) clearInterval(gcpUpdateInterval);
+                if (youtubeLiveUpdateInterval) clearInterval(youtubeLiveUpdateInterval);
             });
 
             const cityInput = document.getElementById('cityInput');
