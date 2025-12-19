@@ -49,7 +49,7 @@ This app tracks live stream status for AgendaFreeTV. To use this feature:
 
 3. **Update the Code:**
    - Open `index.html`
-   - Find line ~1649: `const YOUTUBE_API_KEY = 'YOUR_YOUTUBE_API_KEY_HERE';`
+   - Find line ~1652: `const YOUTUBE_API_KEY = 'YOUR_YOUTUBE_API_KEY_HERE';`
    - Replace with your restricted key
    - **DO NOT commit your actual key if forking/contributing**
 
