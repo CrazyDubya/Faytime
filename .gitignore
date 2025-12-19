@@ -1,3 +1,23 @@
+# API Keys and Secrets
+.env
+.env.local
+.env.*.local
+.env.production.local
+config.js
+secrets.js
+api-keys.js
+*.key
+*.pem
+api_keys.txt
+credentials.json
+
+# Never commit these patterns
+*API_KEY*
+*api_key*
+*apikey*
+*_key.js
+*-key.js
+
 # Node modules
 node_modules/
 
@@ -5,12 +25,16 @@ node_modules/
 dist/
 build/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
 # OS files
 .DS_Store

@@ -8,6 +8,7 @@ Track local time, Cloud Cover and Moon in ANY City, Track Major Global Markets t
 - **☁️ Weather Information**: View cloud cover percentage, temperature, humidity, and wind speed
 - **🌙 Moon Phase**: See the current moon phase with emoji visualization and illumination percentage
 - **📊 Global Markets**: Track major stock exchanges with live open/close status and countdown timers
+- **📺 YouTube Live Status**: Track AgendaFreeTV live stream status (requires API key setup)
 
 ## Markets Tracked
 
@@ -25,8 +26,39 @@ This is a **static GitHub page** that requires no server-side processing:
 - Pure HTML, CSS, and JavaScript
 - Free APIs used:
   - [Open-Meteo](https://open-meteo.com/) - Weather and geocoding (no API key required)
+  - [YouTube Data API v3](https://developers.google.com/youtube/v3) - Live stream status (requires API key)
 - Built-in moon phase calculation algorithm
 - Local timezone calculations for market hours
+
+## Setup Instructions
+
+### YouTube Live Status Feature
+
+This app tracks live stream status for AgendaFreeTV. To use this feature:
+
+1. **Get a YouTube API Key:**
+   ```bash
+   # Visit Google Cloud Console
+   https://console.cloud.google.com/apis/credentials
+   ```
+
+2. **Configure the API Key:**
+   - Enable YouTube Data API v3
+   - Restrict to your domain: `https://crazydubya.github.io/*`
+   - Copy your API key
+
+3. **Update the Code:**
+   - Open `index.html`
+   - Find line ~1649: `const YOUTUBE_API_KEY = 'YOUR_YOUTUBE_API_KEY_HERE';`
+   - Replace with your restricted key
+   - **DO NOT commit your actual key if forking/contributing**
+
+4. **Alternative Setup (GitHub Actions):**
+   - Store key in GitHub Secrets
+   - Use workflow to inject at build time
+   - See `.github/workflows/deploy.yml` for example (if available)
+
+> ⚠️ **Security Note**: Never commit API keys to version control. See [SECURITY.md](SECURITY.md) for best practices.
 
 ## Usage
 

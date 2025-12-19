@@ -1646,7 +1646,10 @@
         let gcpUpdateInterval = null;
 
         // YouTube Live Status (AgendaFreeTV)
-        const YOUTUBE_API_KEY = 'AIzaSyB9ZtwMcHiv3crmxYA4a3XcqHFZk0O54lI';
+        // YouTube API Key - Replace with your own restricted key
+        // Get your key from: https://console.cloud.google.com/apis/credentials
+        // Restrict it to: https://crazydubya.github.io/*
+        const YOUTUBE_API_KEY = 'YOUR_YOUTUBE_API_KEY_HERE';
         const AGENDAFREETV_CHANNEL_ID = 'UCshCsg1YVKli8yBai-wa78w';
         let youtubeLiveData = { isLive: false, status: 'Loading...', description: 'Checking stream status...', videoId: null };
         let youtubeLiveUpdateInterval = null;
