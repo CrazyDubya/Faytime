@@ -710,6 +710,22 @@
             text-decoration: underline;
         }
 
+        /* View Counter */
+        .view-counter {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.85em;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .view-counter span {
+            font-weight: 600;
+            color: white;
+        }
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
@@ -853,6 +869,9 @@
         <footer>
             <p>Data updates every minute. Market hours may vary on special occasions.</p>
             <p>Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo API</a></p>
+            <div class="view-counter">
+                Page Views: <span id="viewCount">0</span>
+            </div>
         </footer>
     </div>
 
@@ -2421,10 +2440,23 @@
             errorMsg.style.display = 'block';
         }
 
+        // View counter function
+        function updateViewCounter() {
+            const viewCountKey = 'faytime_view_count';
+            let viewCount = parseInt(localStorage.getItem(viewCountKey) || '0', 10);
+            viewCount++;
+            localStorage.setItem(viewCountKey, viewCount.toString());
+            const viewCountElement = document.getElementById('viewCount');
+            if (viewCountElement) {
+                viewCountElement.textContent = viewCount.toLocaleString();
+            }
+        }
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             updateCity();
             updateMarkets();
+            updateViewCounter();
 
             marketUpdateInterval = setInterval(updateMarkets, 60000);
             // Update GCP data every 60 seconds
