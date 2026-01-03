@@ -362,6 +362,62 @@
             margin-top: 6px;
         }
 
+        /* Day Status Box */
+        .day-status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        .day-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .day-status-badge.weekday {
+            background: rgba(76, 175, 80, 0.3);
+        }
+
+        .day-status-badge.weekend {
+            background: rgba(255, 193, 7, 0.3);
+        }
+
+        .day-status-badge.holiday {
+            background: rgba(233, 30, 99, 0.3);
+        }
+
+        .holiday-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .day-status-loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Markets Section */
         .markets-header {
             display: flex;
@@ -1443,6 +1499,177 @@
             ]
         };
 
+        // ============================================
+        // WEEKEND & HOLIDAY DETECTION SYSTEM
+        // ============================================
+
+        // Weekend patterns by country code (ISO 3166-1 alpha-2)
+        // Values are arrays of weekend day numbers: 0=Sunday, 1=Monday, ... 5=Friday, 6=Saturday
+        const weekendPatterns = {
+            // Friday-Saturday weekend countries
+            'AF': [4, 5],  // Afghanistan (Thu-Fri)
+            'DZ': [5, 6],  // Algeria
+            'BH': [5, 6],  // Bahrain
+            'BD': [5, 6],  // Bangladesh
+            'EG': [5, 6],  // Egypt
+            'IR': [5],     // Iran (Friday only, some businesses Thu-Fri)
+            'IQ': [5, 6],  // Iraq
+            'IL': [5, 6],  // Israel
+            'JO': [5, 6],  // Jordan
+            'KW': [5, 6],  // Kuwait
+            'LY': [5, 6],  // Libya
+            'MV': [5, 6],  // Maldives
+            'OM': [5, 6],  // Oman
+            'PS': [5, 6],  // Palestine
+            'QA': [5, 6],  // Qatar
+            'SA': [5, 6],  // Saudi Arabia
+            'SD': [5, 6],  // Sudan
+            'SY': [5, 6],  // Syria
+            'AE': [6, 0],  // UAE (Sat-Sun since 2022)
+            'YE': [5, 6],  // Yemen
+            // Special cases
+            'NP': [6],     // Nepal (Saturday only)
+            'BN': [5, 0],  // Brunei (Friday & Sunday)
+            // Default: Saturday-Sunday (covers most of world including priority countries)
+            // US, Russia, Ukraine, Venezuela, China, Thailand, Cambodia, Lebanon, etc.
+        };
+
+        // Default weekend pattern (Saturday-Sunday) for countries not in the list
+        const defaultWeekend = [0, 6]; // Sunday=0, Saturday=6
+
+        // Lazy loading state for date-holidays library
+        let holidaysLibrary = null;
+        let holidaysLibraryLoading = false;
+        let holidaysLibraryLoadPromise = null;
+
+        // Cache for holiday lookups (key: "countryCode-YYYY-MM-DD")
+        const holidayCache = new Map();
+        const HOLIDAY_CACHE_MAX_SIZE = 500;
+
+        // Load date-holidays library lazily
+        async function loadHolidaysLibrary() {
+            if (holidaysLibrary) {
+                return holidaysLibrary;
+            }
+
+            if (holidaysLibraryLoadPromise) {
+                return holidaysLibraryLoadPromise;
+            }
+
+            holidaysLibraryLoading = true;
+            holidaysLibraryLoadPromise = new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/date-holidays@3/dist/umd.min.js';
+                script.async = true;
+
+                script.onload = () => {
+                    holidaysLibrary = window.Holidays;
+                    holidaysLibraryLoading = false;
+                    resolve(holidaysLibrary);
+                };
+
+                script.onerror = () => {
+                    holidaysLibraryLoading = false;
+                    holidaysLibraryLoadPromise = null;
+                    reject(new Error('Failed to load holidays library'));
+                };
+
+                document.head.appendChild(script);
+            });
+
+            return holidaysLibraryLoadPromise;
+        }
+
+        // Check if a date is a weekend in the given country
+        function isWeekend(countryCode, date) {
+            const dayOfWeek = date.getDay();
+            const pattern = weekendPatterns[countryCode] || defaultWeekend;
+            return pattern.includes(dayOfWeek);
+        }
+
+        // Get weekend day names for a country
+        function getWeekendDays(countryCode) {
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const pattern = weekendPatterns[countryCode] || defaultWeekend;
+            return pattern.map(d => dayNames[d]).join(' & ');
+        }
+
+        // Get holidays for a country on a specific date (with caching)
+        async function getHolidaysForDate(countryCode, date) {
+            const dateStr = date.toISOString().split('T')[0];
+            const cacheKey = `${countryCode}-${dateStr}`;
+
+            // Check cache first
+            if (holidayCache.has(cacheKey)) {
+                return holidayCache.get(cacheKey);
+            }
+
+            try {
+                const Holidays = await loadHolidaysLibrary();
+                const hd = new Holidays(countryCode);
+                const holidays = hd.isHoliday(date);
+
+                // Filter to only public holidays
+                const publicHolidays = holidays
+                    ? holidays.filter(h => h.type === 'public')
+                    : [];
+
+                // Manage cache size
+                if (holidayCache.size >= HOLIDAY_CACHE_MAX_SIZE) {
+                    const firstKey = holidayCache.keys().next().value;
+                    holidayCache.delete(firstKey);
+                }
+
+                holidayCache.set(cacheKey, publicHolidays);
+                return publicHolidays;
+            } catch (error) {
+                console.warn('Holiday lookup failed:', error);
+                return [];
+            }
+        }
+
+        // Get full day status (weekend + holiday info)
+        async function getDayStatus(countryCode, timezone) {
+            // Get the current date in the target timezone
+            const now = new Date();
+            const localDateStr = now.toLocaleDateString('en-CA', { timeZone: timezone }); // YYYY-MM-DD format
+            const localDate = new Date(localDateStr + 'T12:00:00'); // Use noon to avoid timezone edge cases
+
+            const dayOfWeek = new Date(now.toLocaleString('en-US', { timeZone: timezone })).getDay();
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+            const isWeekendDay = isWeekend(countryCode, new Date(now.toLocaleString('en-US', { timeZone: timezone })));
+            const weekendDays = getWeekendDays(countryCode);
+
+            // Start with basic status
+            const status = {
+                dayName: dayNames[dayOfWeek],
+                isWeekend: isWeekendDay,
+                weekendDays: weekendDays,
+                isHoliday: false,
+                holidayName: null,
+                loading: false,
+                error: null
+            };
+
+            // Try to get holiday info (non-blocking)
+            try {
+                status.loading = true;
+                const holidays = await getHolidaysForDate(countryCode, localDate);
+                status.loading = false;
+
+                if (holidays && holidays.length > 0) {
+                    status.isHoliday = true;
+                    status.holidayName = holidays[0].name;
+                }
+            } catch (error) {
+                status.loading = false;
+                status.error = 'Holiday data unavailable';
+            }
+
+            return status;
+        }
+
         // Market data with trading hours in LOCAL TIME
         const markets = [
             // Americas
@@ -2219,6 +2446,7 @@
                         lon: data.results[0].longitude,
                         name: data.results[0].name,
                         country: data.results[0].country,
+                        countryCode: data.results[0].country_code,
                         timezone: data.results[0].timezone
                     };
                 }
@@ -2361,12 +2589,36 @@
             const windSpeed = Math.round(weather.current.wind_speed_10m);
             const weatherDesc = getWeatherDescription(weather.current.weather_code);
 
+            // Get initial weekend status (sync, no library needed)
+            const countryCode = location.countryCode || 'US';
+            const dayOfWeek = new Date(now.toLocaleString('en-US', { timeZone: weather.timezone })).getDay();
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const currentDayName = dayNames[dayOfWeek];
+            const isWeekendDay = isWeekend(countryCode, new Date(now.toLocaleString('en-US', { timeZone: weather.timezone })));
+            const weekendDays = getWeekendDays(countryCode);
+
             cityInfo.innerHTML = `
                 <article class="info-box fade-in" aria-label="Local time information">
                     <h3>Local Time</h3>
                     <div class="value" id="localTime" aria-live="polite">${localTime}</div>
                     <div class="detail">${localDate}</div>
                     <div class="detail">${sanitizeInput(currentCity)}</div>
+                </article>
+                <article class="info-box fade-in" aria-label="Day status information" style="animation-delay: 0.05s">
+                    <h3>Day Status</h3>
+                    <div class="value">${currentDayName}</div>
+                    <div class="day-status-indicator">
+                        <span class="day-status-badge ${isWeekendDay ? 'weekend' : 'weekday'}">
+                            ${isWeekendDay ? '🌴 Weekend' : '💼 Weekday'}
+                        </span>
+                        <span class="day-status-badge" id="holidayBadge" style="display: none;">
+                            🎉 Holiday
+                        </span>
+                        <span class="day-status-loading" id="holidayLoading" title="Checking holidays..."></span>
+                    </div>
+                    <div class="holiday-name" id="holidayName" style="display: none;"></div>
+                    <div class="detail">Weekend: ${weekendDays}</div>
+                    <div class="detail" style="opacity: 0.7; font-size: 0.8em;">${location.country} (${countryCode})</div>
                 </article>
                 <article class="info-box fade-in" aria-label="Weather information" style="animation-delay: 0.1s">
                     <h3>Weather
@@ -2411,6 +2663,44 @@
             fetchGCPData();
             // Fetch YouTube live status after rendering the widget
             fetchYouTubeLiveStatus();
+            // Fetch holiday data lazily (async, non-blocking)
+            fetchHolidayStatus(countryCode, weather.timezone);
+        }
+
+        // Fetch and update holiday status asynchronously
+        async function fetchHolidayStatus(countryCode, timezone) {
+            const loadingEl = document.getElementById('holidayLoading');
+            const badgeEl = document.getElementById('holidayBadge');
+            const nameEl = document.getElementById('holidayName');
+
+            if (!loadingEl) return;
+
+            try {
+                const now = new Date();
+                const localDateStr = now.toLocaleDateString('en-CA', { timeZone: timezone });
+                const localDate = new Date(localDateStr + 'T12:00:00');
+
+                const holidays = await getHolidaysForDate(countryCode, localDate);
+
+                // Hide loading spinner
+                loadingEl.style.display = 'none';
+
+                if (holidays && holidays.length > 0) {
+                    // Show holiday badge and name
+                    if (badgeEl) {
+                        badgeEl.style.display = 'inline-flex';
+                    }
+                    if (nameEl) {
+                        nameEl.textContent = holidays[0].name;
+                        nameEl.style.display = 'inline-block';
+                    }
+                }
+            } catch (error) {
+                // Silently hide loading on error
+                if (loadingEl) {
+                    loadingEl.style.display = 'none';
+                }
+            }
         }
 
         function updateLocalTime(timezone) {
