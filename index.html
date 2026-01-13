@@ -2154,16 +2154,11 @@
             
             // Calculate moon's ecliptic longitude
             function getMoonLongitude(jd) {
-                const T = (jd - 2451545.0) / 36525.0;
-                
                 // Mean longitude of moon
                 const L0 = 218.316 + 13.176396 * (jd - 2451545.0);
                 
                 // Mean anomaly of moon
                 const M = 134.963 + 13.064993 * (jd - 2451545.0);
-                
-                // Mean anomaly of sun
-                const M1 = 357.529 + 0.985600 * (jd - 2451545.0);
                 
                 // Argument of latitude
                 const F = 93.272 + 13.229350 * (jd - 2451545.0);
@@ -2176,7 +2171,6 @@
             
             // Calculate moon's declination and right ascension
             function getMoonEquatorial(jd) {
-                const T = (jd - 2451545.0) / 36525.0;
                 
                 const L0 = 218.316 + 13.176396 * (jd - 2451545.0);
                 const M = 134.963 + 13.064993 * (jd - 2451545.0);
@@ -2231,7 +2225,7 @@
                 let moonset = null;
                 
                 // Check each hour of the day
-                for (let hour = 0; hour < 48; hour++) {
+                for (let hour = 0; hour < 24; hour++) {
                     const time1 = new Date(startOfDay.getTime() + hour * 3600000);
                     const time2 = new Date(startOfDay.getTime() + (hour + 1) * 3600000);
                     
@@ -2242,13 +2236,13 @@
                     const alt2 = getMoonAltitude(jd2, lat, lon);
                     
                     // Moon rise (crossing horizon upward)
-                    if (alt1 < 0 && alt2 >= 0 && !moonrise && hour < 24) {
+                    if (alt1 < 0 && alt2 >= 0 && !moonrise) {
                         const fraction = -alt1 / (alt2 - alt1);
                         moonrise = new Date(time1.getTime() + fraction * 3600000);
                     }
                     
                     // Moon set (crossing horizon downward)
-                    if (alt1 >= 0 && alt2 < 0 && !moonset && hour < 24) {
+                    if (alt1 >= 0 && alt2 < 0 && !moonset) {
                         const fraction = alt1 / (alt1 - alt2);
                         moonset = new Date(time1.getTime() + fraction * 3600000);
                     }
