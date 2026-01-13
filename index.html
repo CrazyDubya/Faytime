@@ -2152,23 +2152,6 @@
                 return jd;
             }
             
-            // Calculate moon's ecliptic longitude
-            function getMoonLongitude(jd) {
-                // Mean longitude of moon
-                const L0 = 218.316 + 13.176396 * (jd - 2451545.0);
-                
-                // Mean anomaly of moon
-                const M = 134.963 + 13.064993 * (jd - 2451545.0);
-                
-                // Argument of latitude
-                const F = 93.272 + 13.229350 * (jd - 2451545.0);
-                
-                // Longitude - simplified
-                const lambda = L0 + 6.289 * Math.sin(M * Math.PI / 180);
-                
-                return (lambda % 360 + 360) % 360;
-            }
-            
             // Calculate moon's declination and right ascension
             function getMoonEquatorial(jd) {
                 
@@ -2217,7 +2200,7 @@
             }
             
             // Find rise/set times
-            function findRiseSetTimes(date, lat, lon, timezone) {
+            function findRiseSetTimes(date, lat, lon) {
                 const startOfDay = new Date(date);
                 startOfDay.setHours(0, 0, 0, 0);
                 
@@ -2255,7 +2238,7 @@
             const altitude = getMoonAltitude(jd, lat, lon);
             const isVisible = altitude > 0;
             
-            const { moonrise, moonset } = findRiseSetTimes(date, lat, lon, timezone);
+            const { moonrise, moonset } = findRiseSetTimes(date, lat, lon);
             
             // Format times in local timezone
             function formatTime(date, tz) {
