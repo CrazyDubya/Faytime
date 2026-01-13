@@ -2128,6 +2128,137 @@
             };
         }
 
+        // Calculate moon position and visibility
+        function getMoonPosition(date, lat, lon, timezone) {
+            // Convert date to Julian date
+            function toJulianDate(d) {
+                const year = d.getUTCFullYear();
+                const month = d.getUTCMonth() + 1;
+                const day = d.getUTCDate();
+                const hour = d.getUTCHours() + d.getUTCMinutes() / 60.0 + d.getUTCSeconds() / 3600.0;
+                
+                let y = year;
+                let m = month;
+                
+                if (m <= 2) {
+                    y = y - 1;
+                    m = m + 12;
+                }
+                
+                const A = Math.floor(y / 100);
+                const B = 2 - A + Math.floor(A / 4);
+                
+                const jd = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + day + hour / 24.0 + B - 1524.5;
+                return jd;
+            }
+            
+            // Calculate moon's declination and right ascension
+            function getMoonEquatorial(jd) {
+                
+                const L0 = 218.316 + 13.176396 * (jd - 2451545.0);
+                const M = 134.963 + 13.064993 * (jd - 2451545.0);
+                const F = 93.272 + 13.229350 * (jd - 2451545.0);
+                
+                const lambda = (L0 + 6.289 * Math.sin(M * Math.PI / 180)) % 360;
+                const beta = 5.128 * Math.sin(F * Math.PI / 180);
+                
+                const epsilon = 23.439 - 0.0000004 * (jd - 2451545.0);
+                
+                const lambdaRad = lambda * Math.PI / 180;
+                const betaRad = beta * Math.PI / 180;
+                const epsilonRad = epsilon * Math.PI / 180;
+                
+                const ra = Math.atan2(Math.sin(lambdaRad) * Math.cos(epsilonRad) - Math.tan(betaRad) * Math.sin(epsilonRad), Math.cos(lambdaRad));
+                const dec = Math.asin(Math.sin(betaRad) * Math.cos(epsilonRad) + Math.cos(betaRad) * Math.sin(epsilonRad) * Math.sin(lambdaRad));
+                
+                return {
+                    ra: ra * 180 / Math.PI,
+                    dec: dec * 180 / Math.PI
+                };
+            }
+            
+            // Calculate hour angle and altitude
+            function getMoonAltitude(jd, lat, lon) {
+                const eq = getMoonEquatorial(jd);
+                
+                // Local sidereal time
+                const T = (jd - 2451545.0) / 36525.0;
+                const theta0 = 280.46061837 + 360.98564736629 * (jd - 2451545.0) + T * T * (0.000387933 - T / 38710000);
+                const lst = (theta0 + lon) % 360;
+                
+                // Hour angle
+                const ha = (lst - eq.ra + 360) % 360;
+                const haRad = ha * Math.PI / 180;
+                const decRad = eq.dec * Math.PI / 180;
+                const latRad = lat * Math.PI / 180;
+                
+                // Altitude
+                const sinAlt = Math.sin(latRad) * Math.sin(decRad) + Math.cos(latRad) * Math.cos(decRad) * Math.cos(haRad);
+                const alt = Math.asin(sinAlt) * 180 / Math.PI;
+                
+                return alt;
+            }
+            
+            // Find rise/set times
+            function findRiseSetTimes(date, lat, lon) {
+                const startOfDay = new Date(date);
+                startOfDay.setHours(0, 0, 0, 0);
+                
+                let moonrise = null;
+                let moonset = null;
+                
+                // Check each hour of the day
+                for (let hour = 0; hour < 24; hour++) {
+                    const time1 = new Date(startOfDay.getTime() + hour * 3600000);
+                    const time2 = new Date(startOfDay.getTime() + (hour + 1) * 3600000);
+                    
+                    const jd1 = toJulianDate(time1);
+                    const jd2 = toJulianDate(time2);
+                    
+                    const alt1 = getMoonAltitude(jd1, lat, lon);
+                    const alt2 = getMoonAltitude(jd2, lat, lon);
+                    
+                    // Moon rise (crossing horizon upward)
+                    if (alt1 < 0 && alt2 >= 0 && !moonrise) {
+                        const fraction = -alt1 / (alt2 - alt1);
+                        moonrise = new Date(time1.getTime() + fraction * 3600000);
+                    }
+                    
+                    // Moon set (crossing horizon downward)
+                    if (alt1 >= 0 && alt2 < 0 && !moonset) {
+                        const fraction = alt1 / (alt1 - alt2);
+                        moonset = new Date(time1.getTime() + fraction * 3600000);
+                    }
+                }
+                
+                return { moonrise, moonset };
+            }
+            
+            const jd = toJulianDate(date);
+            const altitude = getMoonAltitude(jd, lat, lon);
+            const isVisible = altitude > 0;
+            
+            const { moonrise, moonset } = findRiseSetTimes(date, lat, lon);
+            
+            // Format times in local timezone
+            function formatTime(date, tz) {
+                if (!date) return null;
+                return date.toLocaleString('en-US', {
+                    timeZone: tz,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            }
+            
+            return {
+                isVisible: isVisible,
+                altitude: altitude,
+                moonrise: formatTime(moonrise, timezone),
+                moonset: formatTime(moonset, timezone)
+            };
+        }
+
         // Check if date is a holiday for the market
         function isMarketHoliday(market, date) {
             const holidays = marketHolidays[market.symbol];
@@ -2544,8 +2675,11 @@
                 // Get moon phase
                 const moonPhase = getMoonPhase(new Date());
 
+                // Get moon position
+                const moonPosition = getMoonPosition(new Date(), cityLat, cityLon, weather.timezone);
+
                 // Display all information
-                displayCityInfo(location, weather, moonPhase);
+                displayCityInfo(location, weather, moonPhase, moonPosition);
 
                 // Show suggestions if user entered a country
                 if (countryInfo) {
@@ -2561,7 +2695,7 @@
             }
         }
 
-        function displayCityInfo(location, weather, moonPhase) {
+        function displayCityInfo(location, weather, moonPhase, moonPosition) {
             const cityInfo = document.getElementById('cityInfo');
             const now = new Date();
 
@@ -2634,9 +2768,18 @@
                 </article>
                 <article class="info-box fade-in" aria-label="Moon phase information" style="animation-delay: 0.2s">
                     <h3>Moon Phase</h3>
-                    <div class="moon-display" aria-label="${moonPhase.name}">${moonPhase.emoji}</div>
+                    <div class="moon-display" aria-label="${moonPhase.name}" style="${moonPosition.isVisible ? '' : 'opacity: 0.5;'}">${moonPhase.emoji}</div>
                     <div class="detail">${moonPhase.name}</div>
                     <div class="detail">Illumination: ${moonPhase.illumination}%</div>
+                    <div class="detail moon-visibility" style="font-weight: 500; margin-top: 8px;">
+                        ${moonPosition.isVisible 
+                            ? '🌙 Visible now (Above horizon)' 
+                            : moonPosition.moonrise 
+                                ? `🌅 Rises at ${moonPosition.moonrise}` 
+                                : moonPosition.moonset 
+                                    ? `🌇 Set at ${moonPosition.moonset}` 
+                                    : '🌑 Not visible today'}
+                    </div>
                 </article>
                 <article class="info-box fade-in" aria-label="Global Consciousness Project status" style="animation-delay: 0.3s">
                     <h3>Global Consciousness</h3>
