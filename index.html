@@ -2324,6 +2324,21 @@
             const marketDay = marketDate.getDay();
             const currentMinutes = hours * 60 + minutes;
 
+            // Use the same configured dates and weekdays for every next-open search.
+            function daysUntilNextTradingDay() {
+                const nextDate = new Date(year, month - 1, day);
+                let days = 0;
+                do {
+                    nextDate.setDate(nextDate.getDate() + 1);
+                    days++;
+                    const dateKey = `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, '0')}-${String(nextDate.getDate()).padStart(2, '0')}`;
+                    if (market.daysOpen.includes(nextDate.getDay()) && !holidays.includes(dateKey)) {
+                        return days;
+                    }
+                } while (days <= 7 * (holidays.length + 1));
+                return null;
+            }
+
             // Check if it's a holiday
             const todayStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const holidays = marketHolidays[market.symbol] || [];
@@ -2338,11 +2353,7 @@
 
             // Check if it's a trading day
             if (!market.daysOpen.includes(marketDay)) {
-                const daysUntilOpen = market.daysOpen.map(d => {
-                    let diff = d - marketDay;
-                    if (diff <= 0) diff += 7;
-                    return diff;
-                }).sort((a, b) => a - b)[0];
+                const daysUntilOpen = daysUntilNextTradingDay();
 
                 return {
                     isOpen: false,
@@ -2408,15 +2419,8 @@
                     minutesUntil: minutesUntilOpen
                 };
             } else {
-                // After close, calculate until next day's open
-                // First, check if tomorrow is a trading day
-                let daysToAdd = 1;
-                let nextDay = (marketDay + 1) % 7;
-
-                while (!market.daysOpen.includes(nextDay) && daysToAdd < 7) {
-                    daysToAdd++;
-                    nextDay = (nextDay + 1) % 7;
-                }
+                // After close, skip all dates this page itself marks closed.
+                const daysToAdd = daysUntilNextTradingDay();
 
                 const minutesUntilOpen = (24 * 60 - currentMinutes) + openMinutes + ((daysToAdd - 1) * 24 * 60);
 
